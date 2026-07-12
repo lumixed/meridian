@@ -2,14 +2,17 @@
 
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import Globe from 'react-globe.gl'
+import { TRADE_ARCS, CITY_ARCS, type ArcDatum } from './arcs'
 import type { CityDot } from '@/types/city'
 import type { SelectedEntity } from '@/types/globe'
+import type { LayerState } from '@/types/layers'
 
 export interface GlobeCoreProps {
   onEntitySelect: (entity: SelectedEntity | null) => void
   onLoaded: () => void
   flyTo: { lat: number; lng: number; altitude?: number } | null
   selectedEntity: SelectedEntity | null
+  layers: LayerState
 }
 
 interface GeoFeature {
@@ -50,7 +53,15 @@ function flagOf(code: string) {
   catch { return '🌍' }
 }
 
-export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEntity }: GlobeCoreProps) {
+function heatColor(pct: number): string {
+  if (pct >= 0.90) return 'rgba(0,255,140,0.99)'
+  if (pct >= 0.75) return 'rgba(50,210,80,0.97)'
+  if (pct >= 0.40) return 'rgba(255,195,0,0.97)'
+  if (pct >= 0.25) return 'rgba(255,75,0,0.97)'
+  return 'rgba(210,15,15,0.99)'
+}
+
+export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEntity, layers }: GlobeCoreProps) {
   const globeRef = useRef<any>(null)
   const onEntitySelectRef = useRef(onEntitySelect)
   const onLoadedRef = useRef(onLoaded)
@@ -62,7 +73,11 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
   const [hoveredCountry, setHoveredCountry] = useState<GeoFeature | null>(null)
   const [selectedCountry, setSelectedCountry] = useState<GeoFeature | null>(null)
   const [dims, setDims] = useState({ w: 800, h: 600 })
+  const [heatmapScores, setHeatmapScores] = useState<Record<string, number>>({})
+  const heatFetched = useRef(false)
   const setupDone = useRef(false)
+
+  const { heatmap, tradeRoutes, cityNetwork, investment } = layers
 
   useEffect(() => {
     const upd = () => setDims({ w: window.innerWidth, h: window.innerHeight })
@@ -80,6 +95,43 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
       .then(r => r.json())
       .then(d => { if (d.success) setCities(d.cities) })
   }, [])
+
+  useEffect(() => {
+    if (!(heatmap || investment) || heatFetched.current) return
+    heatFetched.current = true
+    fetch('/api/heatmap')
+      .then(r => r.json())
+      .then(d => setHeatmapScores(d.scores ?? {}))
+      .catch(() => {})
+  }, [heatmap, investment])
+
+  const percentileScores = useMemo(() => {
+    const entries = Object.entries(heatmapScores)
+    if (entries.length === 0) return {} as Record<string, number>
+
+    const sorted = entries.map(([, v]) => v).sort((a, b) => a - b)
+    const n = sorted.length
+    const result: Record<string, number> = {}
+
+    for (const [k, v] of entries) {
+      let lo = 0
+      let hi = n - 1
+      let rank = 0
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1
+        if (sorted[mid] <= v) { rank = mid; lo = mid + 1 } else hi = mid - 1
+      }
+      result[k] = n > 1 ? rank / (n - 1) : 0.5
+    }
+    return result
+  }, [heatmapScores])
+
+  const arcsData = useMemo<ArcDatum[]>(() => {
+    const out: ArcDatum[] = []
+    if (tradeRoutes) out.push(...TRADE_ARCS)
+    if (cityNetwork) out.push(...CITY_ARCS)
+    return out
+  }, [tradeRoutes, cityNetwork])
 
   useEffect(() => {
     if (!countries.features.length) return
@@ -207,11 +259,46 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
     return `rgba(${Math.round(60 + 40 * i)},${Math.round(224 * Math.min(1, 0.4 + i))},${Math.round(192 * Math.min(1, 0.4 + i))},${0.6 + i * 0.4})`
   }, [selectedCountry])
 
+  const arcColor = useCallback((d: object) => {
+    const a = d as ArcDatum
+    if (a.arcType === 'city') return `rgba(178,140,255,${(0.85 + a.weight * 0.14).toFixed(2)})`
+    return a.isGlow
+      ? `rgba(52,226,196,${(0.1 + a.weight * 0.12).toFixed(3)})`
+      : `rgba(72,238,208,${(0.72 + a.weight * 0.26).toFixed(2)})`
+  }, [])
+
+  const arcStroke = useCallback((d: object) => {
+    const a = d as ArcDatum
+    if (a.arcType === 'city') return 1.4 + a.weight * 0.8
+    if (a.isGlow) return 12 + a.weight * 8
+    return 1.0 + a.weight * 1.0
+  }, [])
+
+  const arcAlt = useCallback((d: object) => {
+    const a = d as ArcDatum
+    if (a.arcType === 'city') return 0.05 + a.weight * 0.08
+    const dx = Math.abs(a.endLng - a.startLng)
+    const dy = Math.abs(a.endLat - a.startLat)
+    return 0.06 + Math.min(0.58, Math.sqrt(dx * dx + dy * dy) / 190)
+  }, [])
+
   const polyCapColor = useCallback((f: object) => {
-    if (f === selectedCountry) return 'rgba(8,132,108,0.97)'
-    if (f === hoveredCountry) return 'rgba(69,224,192,0.22)'
+    const feat = f as GeoFeature
+    if (feat === selectedCountry) return 'rgba(8,132,108,0.97)'
+    if (feat === hoveredCountry) return 'rgba(69,224,192,0.22)'
+
+    const iso2 = featureISO2(feat)
+    const pct = iso2 ? percentileScores[iso2] : undefined
+
+    if (investment && pct !== undefined) {
+      if (pct >= 0.75) return 'rgba(34,197,94,0.42)'
+      if (pct >= 0.40) return 'rgba(251,191,36,0.32)'
+      return 'rgba(239,68,68,0.32)'
+    }
+    if (heatmap && pct !== undefined) return heatColor(pct)
+
     return 'rgba(255,255,255,0.04)'
-  }, [selectedCountry, hoveredCountry])
+  }, [selectedCountry, hoveredCountry, heatmap, investment, percentileScores])
 
   const polySideColor = useCallback((f: object) => {
     if (f === selectedCountry) return 'rgba(8,132,108,0.85)'
@@ -222,21 +309,32 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
   const polyStroke = useCallback((f: object) => {
     if (f === selectedCountry) return '#45E0C0'
     if (f === hoveredCountry) return 'rgba(69,224,192,0.75)'
+    if (heatmap || investment) return 'rgba(255,255,255,0.08)'
     return 'rgba(255,255,255,0.14)'
-  }, [selectedCountry, hoveredCountry])
+  }, [selectedCountry, hoveredCountry, heatmap, investment])
 
   const polyAlt = useCallback((f: object) => {
-    if (f === selectedCountry) return 0.18
-    if (f === hoveredCountry) return 0.05
+    const feat = f as GeoFeature
+    if (feat === selectedCountry) return 0.18
+    if (feat === hoveredCountry) return 0.05
+    if (heatmap) {
+      const iso2 = featureISO2(feat)
+      const pct = iso2 ? (percentileScores[iso2] ?? 0) : 0
+      return 0.002 + pct * 0.08
+    }
     return 0.01
-  }, [selectedCountry, hoveredCountry])
+  }, [selectedCountry, hoveredCountry, heatmap, percentileScores])
 
   const polyLabel = useCallback((f: object) => {
     const feat = f as GeoFeature
     const iso2 = featureISO2(feat)
     const name = featureName(feat)
-    return `<div style="pointer-events:none;background:rgba(5,10,15,0.95);border:1px solid rgba(69,224,192,0.25);border-radius:4px;padding:5px 10px;color:rgba(255,255,255,0.90);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.04em;display:flex;align-items:center;gap:6px;white-space:nowrap"><span style="font-size:14px">${flagOf(iso2)}</span><span style="text-transform:uppercase">${name}</span></div>`
-  }, [])
+    const pct = iso2 ? percentileScores[iso2] : undefined
+    const scoreStr = (heatmap || investment) && pct !== undefined
+      ? `<span style="margin-left:6px;color:rgba(69,224,192,0.85);font-size:9px">TOP ${Math.round((1 - pct) * 100) + 1}%</span>`
+      : ''
+    return `<div style="pointer-events:none;background:rgba(5,10,15,0.95);border:1px solid rgba(69,224,192,0.25);border-radius:4px;padding:5px 10px;color:rgba(255,255,255,0.90);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.04em;display:flex;align-items:center;gap:6px;white-space:nowrap"><span style="font-size:14px">${flagOf(iso2)}</span><span style="text-transform:uppercase">${name}</span>${scoreStr}</div>`
+  }, [heatmap, investment, percentileScores])
 
   const makeMarkerEl = useCallback(() => {
     const el = document.createElement('div')
@@ -306,6 +404,18 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
       ringMaxRadius={(pt: object) => 2.8 + (pt as CityDot).pulse_intensity * 3.8}
       ringPropagationSpeed={1.4}
       ringRepeatPeriod={(pt: object) => 2200 - (pt as CityDot).pulse_intensity * 1100}
+
+      arcsData={arcsData}
+      arcStartLat="startLat"
+      arcStartLng="startLng"
+      arcEndLat="endLat"
+      arcEndLng="endLng"
+      arcColor={arcColor}
+      arcAltitude={arcAlt}
+      arcStroke={arcStroke}
+      arcDashLength={(d: object) => (d as ArcDatum).arcType === 'city' ? 0.85 : 0.5}
+      arcDashGap={(d: object) => (d as ArcDatum).arcType === 'city' ? 0.3 : 1.8}
+      arcDashAnimateTime={(d: object) => (d as ArcDatum).arcType === 'city' ? 6000 : 2000}
 
       htmlElementsData={markerData}
       htmlLat="lat"

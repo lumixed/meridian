@@ -4,9 +4,11 @@ import { useState, useCallback, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { AnimatePresence, motion } from 'framer-motion'
 import SidebarPanel from '@/components/Sidebar/SidebarPanel'
+import LayerControl from '@/components/UI/LayerControl'
 import LoadingScreen from '@/components/UI/LoadingScreen'
 import SearchBar from '@/components/UI/SearchBar'
 import type { SelectedEntity } from '@/types/globe'
+import { DEFAULT_LAYERS, type LayerState } from '@/types/layers'
 
 const GlobeContainer = dynamic(() => import('@/components/Globe/GlobeContainer'), {
   ssr: false,
@@ -17,9 +19,14 @@ export default function AppShell() {
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; altitude?: number } | null>(null)
+  const [layers, setLayers] = useState<LayerState>(DEFAULT_LAYERS)
 
   const handleLoaded = useCallback(() => setIsLoaded(true), [])
   const closeSidebar = useCallback(() => setSelectedEntity(null), [])
+
+  const toggleLayer = useCallback((key: keyof LayerState) => {
+    setLayers(prev => ({ ...prev, [key]: !prev[key] }))
+  }, [])
 
   const handleSearchSelect = useCallback((lat: number, lng: number, entity: SelectedEntity) => {
     setFlyTo({ lat, lng, altitude: 1.8 })
@@ -41,6 +48,7 @@ export default function AppShell() {
         onLoaded={handleLoaded}
         flyTo={flyTo}
         selectedEntity={selectedEntity}
+        layers={layers}
       />
 
       <AnimatePresence>
@@ -54,6 +62,8 @@ export default function AppShell() {
             >
               <SearchBar onSelect={handleSearchSelect} />
             </motion.div>
+
+            <LayerControl layers={layers} onToggle={toggleLayer} />
 
             {selectedEntity && (
               <SidebarPanel key={selectedEntity.id} entity={selectedEntity} onClose={closeSidebar} />
