@@ -1,13 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import NewsPanel from './NewsPanel'
 import { useCountUp } from '@/hooks/useCountUp'
 import type { CountryData } from '@/types/country'
 
 interface Props {
   countryCode: string
   countryName: string
+  showNews?: boolean
 }
 
 function StatCard({ label, value, suffix = '', prefix = '', color = '#45E0C0', delay = 0, decimals = 0, source }: {
@@ -103,7 +105,7 @@ function InvestmentBadge({ risk }: { risk: number }) {
   )
 }
 
-export default function CountryView({ countryCode, countryName }: Props) {
+export default function CountryView({ countryCode, countryName, showNews = false }: Props) {
   const [data, setData] = useState<CountryData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -192,6 +194,20 @@ export default function CountryView({ countryCode, countryName }: Props) {
               color={data.unemployment > 10 ? '#FFB020' : data.unemployment > 6 ? '#45E0C0' : '#3DDC97'} source={wbSrc('SL.UEM.TOTL.ZS')} />
           : <Dash label="Unemployment" />}
       </div>
+
+      <AnimatePresence>
+        {showNews && (
+          <motion.div
+            key="news"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <NewsPanel countryCode={countryCode} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {data?.lifeExpectancy != null && (
         <BarCard label="Life Expectancy" value={data.lifeExpectancy} max={90} unit=" YRS" delay={450} color="#8FB6FF" source={wbSrc('SP.DYN.LE00.IN')} />

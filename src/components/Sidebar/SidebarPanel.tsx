@@ -9,9 +9,10 @@ import type { SelectedEntity } from '@/types/globe'
 interface Props {
   entity: SelectedEntity
   onClose: () => void
+  showNews?: boolean
 }
 
-export default function SidebarPanel({ entity, onClose }: Props) {
+export default function SidebarPanel({ entity, onClose, showNews = false }: Props) {
   const isCity = entity.type === 'city'
   const flag = !isCity && entity.countryCode ? flagEmoji(entity.countryCode) : null
   const countryCode = entity.countryCode && entity.countryCode !== '-99'
@@ -53,7 +54,7 @@ export default function SidebarPanel({ entity, onClose }: Props) {
         <div className="flex-1 overflow-y-auto overscroll-contain">
           {isCity
             ? <CityView cityId={entity.id} />
-            : <CountryView countryCode={countryCode} countryName={entity.name} />}
+            : <CountryView countryCode={countryCode} countryName={entity.name} showNews={showNews} />}
         </div>
       </div>
     </motion.div>

@@ -66,7 +66,12 @@ export default function AppShell() {
             <LayerControl layers={layers} onToggle={toggleLayer} />
 
             {selectedEntity && (
-              <SidebarPanel key={selectedEntity.id} entity={selectedEntity} onClose={closeSidebar} />
+              <SidebarPanel
+                key={selectedEntity.id}
+                entity={selectedEntity}
+                onClose={closeSidebar}
+                showNews={layers.news}
+              />
             )}
           </>
         )}

@@ -15,6 +15,7 @@ const LAYERS: { key: keyof LayerState; label: string; desc: string }[] = [
   { key: 'tradeRoutes', label: 'Trade Routes', desc: 'Major bilateral flows' },
   { key: 'cityNetwork', label: 'City Network', desc: 'Economic hub connections' },
   { key: 'investment', label: 'Investment Signal', desc: 'Risk-opportunity overlay' },
+  { key: 'news', label: 'Economic News', desc: 'Live headlines in the sidebar' },
 ]
 
 const ICONS: Record<keyof LayerState, ReactNode> = {
@@ -45,6 +46,13 @@ const ICONS: Record<keyof LayerState, ReactNode> = {
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true">
       <circle cx="7" cy="7" r="5.2" />
       <circle cx="7" cy="7" r="1.8" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+  news: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" aria-hidden="true">
+      <line x1="2" y1="4" x2="12" y2="4" />
+      <line x1="2" y1="7" x2="12" y2="7" />
+      <line x1="2" y1="10" x2="12" y2="10" />
     </svg>
   ),
 }

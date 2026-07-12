@@ -3,6 +3,7 @@ export interface LayerState {
   tradeRoutes: boolean
   cityNetwork: boolean
   investment: boolean
+  news: boolean
 }
 
 export const DEFAULT_LAYERS: LayerState = {
@@ -10,4 +11,5 @@ export const DEFAULT_LAYERS: LayerState = {
   tradeRoutes: false,
   cityNetwork: false,
   investment: false,
+  news: false,
 }
