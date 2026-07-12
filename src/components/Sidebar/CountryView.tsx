@@ -203,6 +203,42 @@ export default function CountryView({ countryCode, countryName }: Props) {
         <BarCard label="Innovation Index" value={innovation} max={100} unit="/100" delay={550} color="#2AC7A8"
           source="Meridian composite · GDP per capita + life expectancy" />
       )}
+
+      {data?.cities && data.cities.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22, duration: 0.2 }}
+          className="card card--flat p-3.5"
+        >
+          <div className="section-head mb-3">
+            <span className="font-data text-[10px] text-[#45E0C0]/60 leading-none">▍</span>
+            <p className="microlabel">Economic Hubs</p>
+          </div>
+          <div className="space-y-2.5">
+            {data.cities.slice(0, 6).map((city, i) => (
+              <motion.div
+                key={city.cityId}
+                initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.24 + i * 0.04, duration: 0.18 }}
+                className="flex items-center gap-3"
+              >
+                <span className="text-[12px] text-white/65 flex-1">{city.name}</span>
+                <div className="flex items-center gap-1.5">
+                  <div
+                    className="h-[2px]"
+                    style={{
+                      width: `${Math.round(city.pulse_intensity * 64)}px`,
+                      background: `rgba(69,224,192,${0.2 + city.pulse_intensity * 0.8})`,
+                    }}
+                  />
+                  <span className="font-data text-[9px] text-white/25 w-6 text-right">
+                    {Math.round(city.pulse_intensity * 100)}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }

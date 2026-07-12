@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import CityView from './CityView'
 import CountryView from './CountryView'
 import { flagEmoji } from '@/lib/country-meta'
 import type { SelectedEntity } from '@/types/globe'
@@ -11,7 +12,8 @@ interface Props {
 }
 
 export default function SidebarPanel({ entity, onClose }: Props) {
-  const flag = entity.countryCode ? flagEmoji(entity.countryCode) : null
+  const isCity = entity.type === 'city'
+  const flag = !isCity && entity.countryCode ? flagEmoji(entity.countryCode) : null
   const countryCode = entity.countryCode && entity.countryCode !== '-99'
     ? entity.countryCode
     : entity.id
@@ -35,7 +37,7 @@ export default function SidebarPanel({ entity, onClose }: Props) {
           <div className="flex items-start gap-3 min-w-0">
             {flag && <span className="text-2xl leading-none mt-0.5 flex-shrink-0">{flag}</span>}
             <div className="min-w-0">
-              <p className="microlabel mb-1.5">Economic Overview</p>
+              <p className="microlabel mb-1.5">{isCity ? entity.country : 'Economic Overview'}</p>
               <h2 className="font-display text-[19px] font-semibold text-white leading-tight truncate">{entity.name}</h2>
             </div>
           </div>
@@ -49,7 +51,9 @@ export default function SidebarPanel({ entity, onClose }: Props) {
         </motion.div>
 
         <div className="flex-1 overflow-y-auto overscroll-contain">
-          <CountryView countryCode={countryCode} countryName={entity.name} />
+          {isCity
+            ? <CityView cityId={entity.id} />
+            : <CountryView countryCode={countryCode} countryName={entity.name} />}
         </div>
       </div>
     </motion.div>

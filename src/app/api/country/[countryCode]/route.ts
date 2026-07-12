@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { getCitiesByCountryCode } from '@/lib/cities'
 import { getWorldBankData } from '@/lib/worldbank'
 import { getCountryMeta } from '@/lib/country-meta'
 import type { CountryData } from '@/types/country'
@@ -95,6 +96,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ countryC
       risk_score: risk,
       innovationScore: innovation,
       dataYear: wbData.dataYear ?? undefined,
+      cities: getCitiesByCountryCode(code),
     }
 
     return NextResponse.json({ success: true, country })

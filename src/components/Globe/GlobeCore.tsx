@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import Globe from 'react-globe.gl'
+import type { CityDot } from '@/types/city'
 import type { SelectedEntity } from '@/types/globe'
 
 export interface GlobeCoreProps {
@@ -57,6 +58,7 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
   useEffect(() => { onLoadedRef.current = onLoaded }, [onLoaded])
 
   const [countries, setCountries] = useState<{ features: GeoFeature[] }>({ features: [] })
+  const [cities, setCities] = useState<CityDot[]>([])
   const [hoveredCountry, setHoveredCountry] = useState<GeoFeature | null>(null)
   const [selectedCountry, setSelectedCountry] = useState<GeoFeature | null>(null)
   const [dims, setDims] = useState({ w: 800, h: 600 })
@@ -71,6 +73,12 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
 
   useEffect(() => {
     fetch('/data/countries.geojson').then(r => r.json()).then(setCountries)
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/cities')
+      .then(r => r.json())
+      .then(d => { if (d.success) setCities(d.cities) })
   }, [])
 
   useEffect(() => {
@@ -176,6 +184,29 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
     })
   }, [])
 
+  const handleCityClick = useCallback((pt: object) => {
+    if (!pt || !globeRef.current) return
+    const c = pt as CityDot
+    const ctrl = globeRef.current.controls()
+    if (ctrl) ctrl.autoRotate = false
+    globeRef.current.pointOfView({ lat: c.lat, lng: c.lng, altitude: 1.1 }, 1400)
+    onEntitySelectRef.current({
+      id: c.cityId,
+      type: 'city',
+      name: c.name,
+      country: c.country,
+      lat: c.lat,
+      lng: c.lng,
+    })
+  }, [])
+
+  const cityColor = useCallback((pt: object) => {
+    const c = pt as CityDot
+    if (selectedCountry && c.country === featureName(selectedCountry)) return '#45E0C0'
+    const i = c.pulse_intensity
+    return `rgba(${Math.round(60 + 40 * i)},${Math.round(224 * Math.min(1, 0.4 + i))},${Math.round(192 * Math.min(1, 0.4 + i))},${0.6 + i * 0.4})`
+  }, [selectedCountry])
+
   const polyCapColor = useCallback((f: object) => {
     if (f === selectedCountry) return 'rgba(8,132,108,0.97)'
     if (f === hoveredCountry) return 'rgba(69,224,192,0.22)'
@@ -256,6 +287,25 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
       polygonLabel={polyLabel}
       onPolygonHover={(f) => setHoveredCountry(f as GeoFeature | null)}
       onPolygonClick={handleCountryClick}
+
+      pointsData={cities}
+      pointLat="lat"
+      pointLng="lng"
+      pointColor={cityColor}
+      pointAltitude={(pt: object) => 0.015 + (pt as CityDot).pulse_intensity * 0.028}
+      pointRadius={(pt: object) => 0.32 + (pt as CityDot).pulse_intensity * 0.65}
+      pointLabel={(pt: object) =>
+        `<span style="pointer-events:none;color:#45E0C0;font-size:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.04em;padding:2px 8px;background:rgba(5,10,15,0.95);border-radius:4px;border:1px solid rgba(69,224,192,0.25)">${(pt as CityDot).name}</span>`
+      }
+      onPointClick={handleCityClick}
+
+      ringsData={cities}
+      ringLat="lat"
+      ringLng="lng"
+      ringColor={(pt: object) => `rgba(69,224,192,${0.06 + (pt as CityDot).pulse_intensity * 0.2})`}
+      ringMaxRadius={(pt: object) => 2.8 + (pt as CityDot).pulse_intensity * 3.8}
+      ringPropagationSpeed={1.4}
+      ringRepeatPeriod={(pt: object) => 2200 - (pt as CityDot).pulse_intensity * 1100}
 
       htmlElementsData={markerData}
       htmlLat="lat"
