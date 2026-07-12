@@ -52,6 +52,36 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--hairline);
+  border-left: 2px solid rgba(69, 224, 192, 0.35);
+  border-radius: 4px;
+}
+.card--flat {
+  border-left: 1px solid var(--hairline);
+}
+
+.microlabel {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-head::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
+}
+
 @keyframes md-ring {
   0% {
     transform: translate(-50%, -50%) scale(0.55);
