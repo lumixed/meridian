@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import InsightStream from './InsightStream'
 import type { CityMetrics } from '@/types/city'
 
 export default function CityView({ cityId }: { cityId: string }) {
@@ -145,6 +146,8 @@ export default function CityView({ cityId }: { cityId: string }) {
           City-level metrics are estimates for contextual reference. For verified national data, view the country dashboard.
         </p>
       </motion.div>
+
+      <InsightStream entityId={cityId} entityType="city" cityCountry={city.country} />
     </div>
   )
 }

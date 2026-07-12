@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import InsightStream from './InsightStream'
 import NewsPanel from './NewsPanel'
 import { useCountUp } from '@/hooks/useCountUp'
 import type { CountryData } from '@/types/country'
@@ -255,6 +256,8 @@ export default function CountryView({ countryCode, countryName, showNews = false
           </div>
         </motion.div>
       )}
+
+      <InsightStream entityId={`${countryCode}:${countryName}`} entityType="country" countryData={data} />
     </div>
   )
 }
