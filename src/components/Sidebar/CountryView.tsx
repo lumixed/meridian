@@ -16,6 +16,110 @@ interface Props {
   onCompare?: () => void
 }
 
+function SectionHead({ title, aside, className = 'mb-3' }: { title: string; aside?: string; className?: string }) {
+  return (
+    <div className={`section-head ${className}`}>
+      <span className="font-data text-[10px] text-[#45E0C0]/60 leading-none">▍</span>
+      <p className="microlabel">{title}</p>
+      {aside && <span className="font-data text-[8px] text-white/20 tracking-wide">{aside}</span>}
+    </div>
+  )
+}
+
+interface TradeData {
+  exports_b: number | null
+  imports_b: number | null
+  balance_b: number | null
+  trade_pct: number | null
+  partners: string[]
+}
+
+function TradePanel({ countryCode }: { countryCode: string }) {
+  const [data, setData] = useState<TradeData | null>(null)
+
+  useEffect(() => {
+    setData(null)
+    fetch(`/api/trade/${encodeURIComponent(countryCode)}`)
+      .then(r => r.json())
+      .then(setData)
+      .catch(() => {})
+  }, [countryCode])
+
+  if (!data) return <div className="card card--flat p-3.5 animate-pulse h-28" />
+
+  const balanceColor = !data.balance_b ? '#45E0C0' : data.balance_b >= 0 ? '#3DDC97' : '#FF5D5D'
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+      className="card card--flat p-3.5"
+    >
+      <SectionHead title="Trade Intelligence" />
+
+      <div className="grid grid-cols-3 gap-2 mb-3">
+        {[
+          { label: 'Exports', v: data.exports_b, prefix: '$', color: undefined as string | undefined },
+          { label: 'Imports', v: data.imports_b, prefix: '$', color: undefined as string | undefined },
+          {
+            label: 'Balance',
+            v: data.balance_b,
+            prefix: data.balance_b != null && data.balance_b >= 0 ? '+$' : '$',
+            color: balanceColor,
+          },
+        ].map(({ label, v, prefix, color }) => (
+          <div key={label} className="text-center">
+            <p className="microlabel">{label}</p>
+            <p className="font-data text-[13px] font-semibold mt-0.5" style={{ color: color ?? '#45E0C0' }}>
+              {v != null ? `${prefix}${Math.abs(v)}B` : '—'}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {data.trade_pct != null && (
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="microlabel">Trade Openness</span>
+            <span className="font-data text-[11px] font-semibold text-[#2AC7A8]">{data.trade_pct}% OF GDP</span>
+          </div>
+          <div className="h-[2px] bg-white/[0.07] overflow-hidden">
+            <div className="h-full bg-[#2AC7A8]" style={{ width: `${Math.min(100, data.trade_pct)}%` }} />
+          </div>
+        </div>
+      )}
+
+      {data.partners.length > 0 && (
+        <div>
+          <p className="microlabel mb-2">Top Trade Partners</p>
+          <div className="flex flex-wrap gap-1.5">
+            {data.partners.slice(0, 7).map((p, i) => (
+              <span
+                key={p}
+                className="font-data text-[9px] uppercase tracking-[0.08em] px-2 py-0.5 rounded border"
+                style={{
+                  borderColor: `rgba(42,199,168,${0.35 - i * 0.04})`,
+                  color: `rgba(69,224,192,${0.8 - i * 0.08})`,
+                  background: `rgba(42,199,168,${0.04 - i * 0.004})`,
+                }}
+              >
+                {p}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-3 pt-3 border-t border-white/[0.05]">
+        <p className="text-[9px] text-white/22 leading-relaxed">
+          <span className="font-data text-[#2AC7A8]/50">▸</span> Enable{' '}
+          <span className="text-[#2AC7A8]/50">Trade Routes</span> in the layer panel to visualise bilateral flows on the
+          globe. Routes are weighted by trade volume — thicker arcs indicate higher dependency.
+        </p>
+      </div>
+    </motion.div>
+  )
+}
+
 function BriefSection({ countryCode, countryName, data }: {
   countryCode: string
   countryName: string
@@ -416,15 +520,14 @@ export default function CountryView({ countryCode, countryName, showNews = false
           source="Meridian composite · GDP per capita + life expectancy" />
       )}
 
+      <TradePanel countryCode={countryCode} />
+
       {data?.cities && data.cities.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22, duration: 0.2 }}
           className="card card--flat p-3.5"
         >
-          <div className="section-head mb-3">
-            <span className="font-data text-[10px] text-[#45E0C0]/60 leading-none">▍</span>
-            <p className="microlabel">Economic Hubs</p>
-          </div>
+          <SectionHead title="Economic Hubs" />
           <div className="space-y-2.5">
             {data.cities.slice(0, 6).map((city, i) => (
               <motion.div
