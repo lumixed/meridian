@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import SidebarPanel from '@/components/Sidebar/SidebarPanel'
 import LayerControl from '@/components/UI/LayerControl'
 import LoadingScreen from '@/components/UI/LoadingScreen'
+import NewsAnchor from '@/components/UI/NewsAnchor'
 import SearchBar from '@/components/UI/SearchBar'
 import type { SelectedEntity } from '@/types/globe'
 import { DEFAULT_LAYERS, type LayerState } from '@/types/layers'
@@ -64,6 +65,8 @@ export default function AppShell() {
             </motion.div>
 
             <LayerControl layers={layers} onToggle={toggleLayer} />
+
+            <NewsAnchor selectedEntity={selectedEntity} />
 
             {selectedEntity && (
               <SidebarPanel

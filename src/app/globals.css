@@ -93,6 +93,15 @@ body {
   }
 }
 
+@keyframes md-wave {
+  0% {
+    transform: scaleY(0.35);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
 @keyframes md-blink {
   0%, 49% {
     opacity: 1;
