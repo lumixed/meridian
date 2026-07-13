@@ -5,7 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import InsightStream from './InsightStream'
 import InvestmentReport from './InvestmentReport'
 import NewsPanel from './NewsPanel'
+import Sparkline from '@/components/UI/Sparkline'
 import { useCountUp } from '@/hooks/useCountUp'
+import type { HistoryPayload } from '@/app/api/history/[countryCode]/route'
 import type { AnchorBriefing } from '@/types/briefing'
 import type { CountryData } from '@/types/country'
 
@@ -23,6 +25,52 @@ function SectionHead({ title, aside, className = 'mb-3' }: { title: string; asid
       <p className="microlabel">{title}</p>
       {aside && <span className="font-data text-[8px] text-white/20 tracking-wide">{aside}</span>}
     </div>
+  )
+}
+
+function TrendCard({ countryCode }: { countryCode: string }) {
+  const [hist, setHist] = useState<HistoryPayload | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    setHist(null)
+    fetch(`/api/history/${encodeURIComponent(countryCode)}`)
+      .then(r => r.json())
+      .then((d: HistoryPayload) => setHist(d))
+      .catch(() => setHist(null))
+      .finally(() => setLoading(false))
+  }, [countryCode])
+
+  if (loading) return (
+    <div className="card card--flat p-3.5">
+      <SectionHead title="10Y Trend" aside="2015–2025" />
+      <div className="space-y-3">
+        <div className="h-12 bg-white/[0.03] rounded animate-pulse" />
+        <div className="h-12 bg-white/[0.03] rounded animate-pulse" />
+      </div>
+    </div>
+  )
+
+  if (!hist || hist.years.length === 0) return null
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+      className="card card--flat p-3.5"
+    >
+      <SectionHead title="10Y Trend" aside="WORLD BANK · 2015–2025" />
+      <div className="space-y-4">
+        <div>
+          <p className="microlabel mb-1">GDP Growth</p>
+          <Sparkline values={hist.gdpGrowth} years={hist.years} color="var(--accent)" zeroLine suffix="%" />
+        </div>
+        <div>
+          <p className="microlabel mb-1">Inflation</p>
+          <Sparkline values={hist.inflation} years={hist.years} color="var(--accent2)" suffix="%" />
+        </div>
+      </div>
+    </motion.div>
   )
 }
 
@@ -494,6 +542,8 @@ export default function CountryView({ countryCode, countryName, showNews = false
               color={data.unemployment > 10 ? '#FFB020' : data.unemployment > 6 ? '#45E0C0' : '#3DDC97'} source={wbSrc('SL.UEM.TOTL.ZS')} />
           : <Dash label="Unemployment" />}
       </div>
+
+      <TrendCard countryCode={countryCode} />
 
       <AnimatePresence>
         {showNews && (

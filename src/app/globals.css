@@ -5,6 +5,10 @@
   --foreground: #ffffff;
   --accent: #45e0c0;
   --accent-deep: #2ac7a8;
+  --accent2: #8fb6ff;
+  --pos: #3ddc97;
+  --warn: #ffb020;
+  --danger: #ff5d5d;
   --hairline: rgba(255, 255, 255, 0.08);
 }
 
