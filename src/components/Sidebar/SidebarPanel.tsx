@@ -2,22 +2,38 @@
 
 import { motion } from 'framer-motion'
 import CityView from './CityView'
+import ComparePanel from './ComparePanel'
 import CountryView from './CountryView'
 import { flagEmoji } from '@/lib/country-meta'
 import type { SelectedEntity } from '@/types/globe'
 
 interface Props {
   entity: SelectedEntity
+  compareEntity?: SelectedEntity | null
   onClose: () => void
+  onCloseCompare?: () => void
+  onStartCompare?: () => void
   showNews?: boolean
 }
 
-export default function SidebarPanel({ entity, onClose, showNews = false }: Props) {
+function resolveCode(entity: SelectedEntity | null | undefined) {
+  if (!entity) return ''
+  return entity.countryCode && entity.countryCode !== '-99' ? entity.countryCode : entity.id
+}
+
+export default function SidebarPanel({
+  entity, compareEntity, onClose, onCloseCompare, onStartCompare, showNews = false,
+}: Props) {
   const isCity = entity.type === 'city'
   const flag = !isCity && entity.countryCode ? flagEmoji(entity.countryCode) : null
-  const countryCode = entity.countryCode && entity.countryCode !== '-99'
-    ? entity.countryCode
-    : entity.id
+  const hasCompare = Boolean(compareEntity && compareEntity.countryCode && entity.countryCode)
+
+  const panelWidth = hasCompare
+    ? 'sm:w-[680px] sm:max-w-[92vw]'
+    : 'sm:w-[400px] sm:max-w-[88vw]'
+
+  const codeA = resolveCode(entity)
+  const codeB = resolveCode(compareEntity)
 
   return (
     <motion.div
@@ -25,7 +41,7 @@ export default function SidebarPanel({ entity, onClose, showNews = false }: Prop
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: '100%', opacity: 0 }}
       transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-      className="absolute top-0 bottom-0 right-0 w-[400px] max-w-[88vw] z-20 flex flex-col"
+      className={`absolute top-0 bottom-0 left-0 right-0 w-auto max-w-none z-30 sm:left-auto sm:z-20 flex flex-col ${panelWidth}`}
     >
       <div
         className="h-full glass flex flex-col border-l border-white/[0.08] overflow-hidden"
@@ -38,23 +54,47 @@ export default function SidebarPanel({ entity, onClose, showNews = false }: Prop
           <div className="flex items-start gap-3 min-w-0">
             {flag && <span className="text-2xl leading-none mt-0.5 flex-shrink-0">{flag}</span>}
             <div className="min-w-0">
-              <p className="microlabel mb-1.5">{isCity ? entity.country : 'Economic Overview'}</p>
-              <h2 className="font-display text-[19px] font-semibold text-white leading-tight truncate">{entity.name}</h2>
+              <p className="microlabel mb-1.5">
+                {isCity ? entity.country : hasCompare ? 'Country Comparison' : 'Economic Overview'}
+              </p>
+              <h2 className="font-display text-[19px] font-semibold text-white leading-tight truncate">
+                {hasCompare ? `${entity.name} vs ${compareEntity!.name}` : entity.name}
+              </h2>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            aria-label="Close panel"
-            className="w-7 h-7 rounded border border-white/10 flex items-center justify-center font-data text-[11px] text-white/30 hover:text-[#45E0C0] hover:border-[#45E0C0]/40 hover:bg-[rgba(69,224,192,0.06)] transition-colors leading-none flex-shrink-0"
-          >
-            ✕
-          </button>
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {hasCompare && onCloseCompare && (
+              <button
+                onClick={onCloseCompare}
+                className="font-data text-[9px] uppercase tracking-[0.14em] px-2.5 py-1.5 rounded border border-white/10 text-white/35 hover:text-[#45E0C0]/70 hover:border-[#45E0C0]/25 transition-colors"
+              >
+                Exit Compare
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              aria-label="Close panel"
+              className="w-7 h-7 rounded border border-white/10 flex items-center justify-center font-data text-[11px] text-white/30 hover:text-[#45E0C0] hover:border-[#45E0C0]/40 hover:bg-[rgba(69,224,192,0.06)] transition-colors leading-none"
+            >
+              ✕
+            </button>
+          </div>
         </motion.div>
 
         <div className="flex-1 overflow-y-auto overscroll-contain">
-          {isCity
-            ? <CityView cityId={entity.id} />
-            : <CountryView countryCode={countryCode} countryName={entity.name} showNews={showNews} />}
+          {hasCompare ? (
+            <ComparePanel codeA={codeA} nameA={entity.name} codeB={codeB} nameB={compareEntity!.name} />
+          ) : isCity ? (
+            <CityView cityId={entity.id} />
+          ) : (
+            <CountryView
+              countryCode={codeA}
+              countryName={entity.name}
+              showNews={showNews}
+              onCompare={onStartCompare}
+            />
+          )}
         </div>
       </div>
     </motion.div>

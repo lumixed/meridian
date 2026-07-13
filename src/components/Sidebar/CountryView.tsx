@@ -13,6 +13,7 @@ interface Props {
   countryCode: string
   countryName: string
   showNews?: boolean
+  onCompare?: () => void
 }
 
 function BriefSection({ countryCode, countryName, data }: {
@@ -278,7 +279,7 @@ function InvestmentBadge({ risk }: { risk: number }) {
   )
 }
 
-export default function CountryView({ countryCode, countryName, showNews = false }: Props) {
+export default function CountryView({ countryCode, countryName, showNews = false, onCompare }: Props) {
   const [data, setData] = useState<CountryData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -352,6 +353,19 @@ export default function CountryView({ countryCode, countryName, showNews = false
         countryData={data}
         flag={data?.flag ?? ''}
       />
+
+      {onCompare && (
+        <motion.button
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15, duration: 0.2 }}
+          onClick={onCompare}
+          className="w-full flex items-center gap-2 px-3.5 py-2 rounded border border-white/[0.08] hover:border-[#45E0C0]/22 hover:bg-[rgba(69,224,192,0.06)] transition-colors group"
+        >
+          <span className="font-data text-[10px] text-white/30 group-hover:text-[#45E0C0]/60 leading-none transition-colors">▸</span>
+          <span className="font-data text-[10px] uppercase tracking-[0.18em] text-white/35 group-hover:text-white/60 transition-colors">
+            Compare with another country
+          </span>
+        </motion.button>
+      )}
 
       <div className="grid grid-cols-2 gap-2.5">
         {pop > 0
