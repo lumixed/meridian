@@ -1,16 +1,188 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import InsightStream from './InsightStream'
+import InvestmentReport from './InvestmentReport'
 import NewsPanel from './NewsPanel'
 import { useCountUp } from '@/hooks/useCountUp'
+import type { AnchorBriefing } from '@/types/briefing'
 import type { CountryData } from '@/types/country'
 
 interface Props {
   countryCode: string
   countryName: string
   showNews?: boolean
+}
+
+function BriefSection({ countryCode, countryName, data }: {
+  countryCode: string
+  countryName: string
+  data: CountryData | null
+}) {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [brief, setBrief] = useState<AnchorBriefing | null>(null)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    setOpen(false)
+    setBrief(null)
+    setError(false)
+  }, [countryCode])
+
+  const handleBrief = useCallback(async () => {
+    if (open) {
+      setOpen(false)
+      return
+    }
+    setOpen(true)
+    if (brief) return
+
+    setLoading(true)
+    setError(false)
+    try {
+      const res = await fetch(`/api/anchor/${encodeURIComponent(countryCode)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          countryName,
+          articles: [],
+          capital: data?.capital ?? null,
+          region: data?.region ?? null,
+          gdp: data?.gdp_billion ?? null,
+          gdpGrowth: data?.gdpGrowth ?? null,
+          population: data?.population_m ?? null,
+          inflation: data?.inflation ?? null,
+          unemployment: data?.unemployment ?? null,
+          gdpPerCapita: data?.gdpPerCapita ?? null,
+        }),
+      })
+      if (!res.ok) throw new Error('brief API error')
+      setBrief(await res.json())
+    } catch {
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }, [countryCode, countryName, data, open, brief])
+
+  return (
+    <div>
+      <motion.button
+        initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.2 }}
+        onClick={handleBrief}
+        className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded border border-[#45E0C0]/22 bg-transparent hover:bg-[rgba(69,224,192,0.06)] transition-colors group"
+      >
+        <span className="font-data text-[10px] text-[#45E0C0]/60 leading-none">{open ? '▾' : '▸'}</span>
+        <span className="font-data text-[10px] uppercase tracking-[0.18em] text-[#45E0C0]/70 group-hover:text-[#45E0C0] transition-colors">
+          Brief Me
+        </span>
+        <span className="font-data text-[8px] uppercase tracking-[0.14em] text-white/20 ml-auto">Text Summary</span>
+      </motion.button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-2 rounded p-4 space-y-3 border border-[#45E0C0]/10" style={{ background: 'rgba(8,14,24,0.97)' }}>
+              {loading && (
+                <div className="flex items-center gap-2 py-2">
+                  <div className="flex gap-1">
+                    {[0, 1, 2].map(i => (
+                      <div
+                        key={i}
+                        className="w-1 h-1 rounded-full bg-[#45E0C0]/50"
+                        style={{
+                          animationName: 'md-wave',
+                          animationDuration: '0.8s',
+                          animationTimingFunction: 'ease-in-out',
+                          animationIterationCount: 'infinite',
+                          animationDirection: 'alternate',
+                          animationDelay: `${i * 0.2}s`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <span className="font-data text-[9px] uppercase tracking-[0.14em] text-white/35">Generating summary</span>
+                </div>
+              )}
+
+              {error && (
+                <p className="text-[11px] text-white/35 py-1">
+                  Summary unavailable. Try the AI Anchor for a full audio briefing.
+                </p>
+              )}
+
+              {brief && !loading && (
+                <>
+                  <p className="font-data text-[10px] text-[#45E0C0]/70 uppercase tracking-[0.12em] leading-snug">
+                    {brief.headline}
+                  </p>
+
+                  <p className="text-[11.5px] text-white/65 leading-relaxed">{brief.script}</p>
+
+                  {brief.keyTakeaways.length > 0 && (
+                    <div>
+                      <p className="microlabel mb-1.5">Key Takeaways</p>
+                      <div className="space-y-1">
+                        {brief.keyTakeaways.map((t, i) => (
+                          <div key={i} className="flex items-start gap-1.5">
+                            <span className="font-data text-[#45E0C0]/45 text-[9px] flex-shrink-0 mt-0.5">▸</span>
+                            <p className="text-[10.5px] text-white/55 leading-snug">{t}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {brief.investmentOutlook && (
+                    <div
+                      className="rounded px-3 py-2"
+                      style={{ background: 'rgba(69,224,192,0.05)', border: '1px solid rgba(69,224,192,0.12)' }}
+                    >
+                      <p className="microlabel mb-0.5">Investment Outlook</p>
+                      <p className="text-[10.5px] text-[#45E0C0]/72 leading-snug">{brief.investmentOutlook}</p>
+                    </div>
+                  )}
+
+                  {(brief.risks.length > 0 || brief.opportunities.length > 0) && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {brief.risks.length > 0 && (
+                        <div>
+                          <p className="font-data text-[9px] uppercase tracking-[0.18em] text-[#FF5D5D]/50 mb-1">Risks</p>
+                          {brief.risks.map((r, i) => (
+                            <p key={i} className="text-[9.5px] text-white/38 leading-snug flex items-start gap-1">
+                              <span className="text-[#FF5D5D]/45 flex-shrink-0">●</span>{r}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                      {brief.opportunities.length > 0 && (
+                        <div>
+                          <p className="font-data text-[9px] uppercase tracking-[0.18em] text-[#3DDC97]/50 mb-1">Opportunities</p>
+                          {brief.opportunities.map((o, i) => (
+                            <p key={i} className="text-[9.5px] text-white/38 leading-snug flex items-start gap-1">
+                              <span className="text-[#3DDC97]/45 flex-shrink-0">●</span>{o}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
 }
 
 function StatCard({ label, value, suffix = '', prefix = '', color = '#45E0C0', delay = 0, decimals = 0, source }: {
@@ -171,6 +343,15 @@ export default function CountryView({ countryCode, countryName, showNews = false
       </motion.div>
 
       <InvestmentBadge risk={risk} />
+
+      <BriefSection countryCode={countryCode} countryName={countryName} data={data} />
+
+      <InvestmentReport
+        countryCode={countryCode}
+        countryName={countryName}
+        countryData={data}
+        flag={data?.flag ?? ''}
+      />
 
       <div className="grid grid-cols-2 gap-2.5">
         {pop > 0
