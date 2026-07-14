@@ -208,7 +208,7 @@ async function fetchRssFiltered(feedUrl: string, name: string): Promise<NewsArti
   })
 }
 
-async function fetchExtraFeeds(code: string, name: string): Promise<NewsArticle[]> {
+async function fetchExtraFeeds(code: string): Promise<NewsArticle[]> {
   const feeds = EXTRA_FEEDS[code] ?? []
   if (feeds.length === 0) return []
   const results = await Promise.allSettled(feeds.map(url => tryFetch(url, 6000)))
@@ -240,7 +240,7 @@ export async function GET(
       fetchGoogleNews(`${name} economy GDP finance`, 3),
       fetchRssFiltered('https://feeds.bbci.co.uk/news/business/rss.xml', name),
       fetchRssFiltered('https://feeds.reuters.com/reuters/businessNews', name),
-      fetchExtraFeeds(code, name),
+      fetchExtraFeeds(code),
     ])
 
     const googleFresh = [...googleArticles, ...googleGeneric].filter(a => freshnessScore(a.pubDate) >= 30)

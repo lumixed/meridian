@@ -1,7 +1,8 @@
 'use client'
 
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react'
-import Globe from 'react-globe.gl'
+import Globe, { type GlobeMethods } from 'react-globe.gl'
+import { ACESFilmicToneMapping } from 'three'
 import { TRADE_ARCS, CITY_ARCS, type ArcDatum } from './arcs'
 import type { CityDot } from '@/types/city'
 import type { SelectedEntity } from '@/types/globe'
@@ -62,7 +63,7 @@ function heatColor(pct: number): string {
 }
 
 export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEntity, layers }: GlobeCoreProps) {
-  const globeRef = useRef<any>(null)
+  const globeRef = useRef<GlobeMethods | undefined>(undefined)
   const onEntitySelectRef = useRef(onEntitySelect)
   const onLoadedRef = useRef(onLoaded)
   useEffect(() => { onEntitySelectRef.current = onEntitySelect }, [onEntitySelect])
@@ -173,17 +174,19 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
 
       try {
         const renderer = globeRef.current.renderer()
-        if (renderer) {
-          renderer.toneMapping = 4
-          renderer.toneMappingExposure = 3.5
-          renderer.shadowMap.enabled = true
-        }
-        const scene = globeRef.current.scene()
-        if (scene) {
-          scene.traverse((obj: any) => {
-            if (obj.isAmbientLight) { obj.intensity = 5.0; obj.color.setHex(0xfff5e0) }
-            if (obj.isDirectionalLight) { obj.intensity = 3.2; obj.color.setHex(0xffe090) }
-          })
+        renderer.toneMapping = ACESFilmicToneMapping
+        renderer.toneMappingExposure = 3.5
+        renderer.shadowMap.enabled = true
+
+        for (const light of globeRef.current.lights()) {
+          if (light.type === 'AmbientLight') {
+            light.intensity = 5.0
+            light.color.setHex(0xfff5e0)
+          }
+          if (light.type === 'DirectionalLight') {
+            light.intensity = 3.2
+            light.color.setHex(0xffe090)
+          }
         }
       } catch (e) {
         console.warn('THREE setup skipped:', e)

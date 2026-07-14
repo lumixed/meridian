@@ -16,7 +16,7 @@ export default function TimelineSlider({ year, onChange }: Props) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 16 }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
-      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 glass border border-white/[0.08] rounded px-5 py-3 w-[360px] max-w-[92vw]"
+      className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 glass border border-white/[0.08] rounded px-5 py-3 w-[360px] max-w-[92vw]"
     >
       <div className="flex items-baseline justify-between mb-2">
         <p className="microlabel">HISTORICAL TIMELINE</p>

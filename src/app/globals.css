@@ -97,6 +97,23 @@ body {
   }
 }
 
+@keyframes md-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: md-marquee 60s linear infinite;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
 @keyframes md-wave {
   0% {
     transform: scaleY(0.35);

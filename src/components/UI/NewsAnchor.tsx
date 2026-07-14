@@ -330,7 +330,7 @@ export default function NewsAnchor({ selectedEntity }: Props) {
             exit={{ opacity: 0, y: 14, scale: 0.92 }}
             transition={{ duration: 0.22 }}
             onClick={triggerBriefing}
-            className="fixed bottom-6 left-6 z-40 max-w-[calc(100vw-1.5rem)] flex items-center gap-2.5 px-3.5 py-2 rounded cursor-pointer select-none"
+            className="fixed bottom-12 left-6 z-40 max-w-[calc(100vw-1.5rem)] flex items-center gap-2.5 px-3.5 py-2 rounded cursor-pointer select-none"
             style={{
               background: 'linear-gradient(135deg,rgba(10,34,30,0.97) 0%,rgba(6,18,16,0.97) 100%)',
               border: '1px solid rgba(69,224,192,0.28)',
@@ -364,7 +364,7 @@ export default function NewsAnchor({ selectedEntity }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
             transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
-            className="fixed bottom-6 left-6 z-40 w-[340px] max-w-[min(92vw,calc(100vw-1.5rem))] rounded-lg overflow-hidden"
+            className="fixed bottom-12 left-6 z-40 w-[340px] max-w-[min(92vw,calc(100vw-1.5rem))] rounded-lg overflow-hidden"
             style={{
               background: 'linear-gradient(160deg,rgba(8,26,23,0.99) 0%,rgba(5,14,12,0.99) 100%)',
               border: '1px solid rgba(69,224,192,0.16)',

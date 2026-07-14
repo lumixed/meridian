@@ -7,8 +7,9 @@ import SidebarPanel from '@/components/Sidebar/SidebarPanel'
 import LayerControl from '@/components/UI/LayerControl'
 import LoadingScreen from '@/components/UI/LoadingScreen'
 import NewsAnchor from '@/components/UI/NewsAnchor'
-import SearchBar from '@/components/UI/SearchBar'
+import Ticker, { type TickerItem } from '@/components/UI/Ticker'
 import TimelineSlider from '@/components/UI/TimelineSlider'
+import TopBar from '@/components/UI/TopBar'
 import type { SelectedEntity } from '@/types/globe'
 import { DEFAULT_LAYERS, type LayerState } from '@/types/layers'
 
@@ -45,6 +46,17 @@ export default function AppShell() {
     setFlyTo({ lat, lng, altitude: 1.8 })
     handleEntitySelect(entity)
   }, [handleEntitySelect])
+
+  const handleTickerSelect = useCallback((item: TickerItem) => {
+    handleSearchSelect(item.lat, item.lng, {
+      id: item.code,
+      type: 'country',
+      name: item.name,
+      countryCode: item.code,
+      lat: item.lat,
+      lng: item.lng,
+    })
+  }, [handleSearchSelect])
 
   const toggleLayer = useCallback((key: keyof LayerState) => {
     setLayers(prev => ({ ...prev, [key]: !prev[key] }))
@@ -111,14 +123,8 @@ export default function AppShell() {
       <AnimatePresence>
         {isLoaded && (
           <>
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="absolute top-5 left-1/2 -translate-x-1/2 z-30 w-[420px] max-w-[88vw]"
-            >
-              <SearchBar onSelect={handleSearchSelect} />
-            </motion.div>
+            <TopBar onSearchSelect={handleSearchSelect} />
+            <Ticker onSelect={handleTickerSelect} />
 
             <LayerControl layers={layers} onToggle={toggleLayer} />
 

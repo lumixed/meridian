@@ -33,7 +33,7 @@ export default function Legend({ layers }: { layers: LayerState }) {
   if (!layers.heatmap && !layers.investment) return null
 
   return (
-    <div className="hidden sm:block fixed right-3 bottom-6 z-30 glass border border-white/[0.08] rounded p-3 w-[172px] space-y-3">
+    <div className="hidden sm:block fixed right-3 bottom-12 z-30 glass border border-white/[0.08] rounded p-3 w-[172px] space-y-3">
       {layers.heatmap && (
         <div>
           <p className="microlabel mb-1.5">GDP/CAPITA PERCENTILE</p>

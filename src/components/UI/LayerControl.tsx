@@ -73,7 +73,7 @@ export default function LayerControl({ layers, onToggle }: Props) {
         initial={{ opacity: 0, x: -12 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.5, duration: 0.3 }}
-        className="fixed left-2 sm:left-3 top-1/2 -translate-y-1/2 z-30 glass border border-white/[0.08] rounded flex flex-col items-center py-2"
+        className="fixed left-2 sm:left-3 top-1/2 -translate-y-1/2 z-30 glass border border-white/[0.08] rounded flex flex-col items-center py-2 max-lg:max-h-[calc(100dvh-6.5rem)] max-lg:overflow-y-auto"
       >
         <span className="microlabel mb-1.5">LYR</span>
 

@@ -42,7 +42,7 @@ export default function SidebarPanel({
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: '100%', opacity: 0 }}
       transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-      className={`absolute top-0 bottom-0 left-0 right-0 w-auto max-w-none z-30 sm:left-auto sm:z-20 flex flex-col ${panelWidth}`}
+      className={`absolute top-12 bottom-8 left-0 right-0 w-auto max-w-none z-30 sm:left-auto sm:z-20 flex flex-col ${panelWidth}`}
     >
       <div
         className="h-full glass flex flex-col border-l border-white/[0.08] overflow-hidden"
