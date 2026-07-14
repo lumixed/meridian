@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { flagEmoji } from '@/lib/country-meta'
+import { flagEmoji } from '@/lib/flag'
 import type { CountryData } from '@/types/country'
 
 interface Props {

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { flagEmoji } from '@/lib/country-meta'
+import { flagEmoji } from '@/lib/flag'
 import type { AnchorBriefing } from '@/types/briefing'
 import type { CountryData } from '@/types/country'
 import type { SelectedEntity } from '@/types/globe'

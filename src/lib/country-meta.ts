@@ -1,3 +1,5 @@
+import { flagEmoji } from '@/lib/flag'
+
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000
 const WB_BASE = 'https://api.worldbank.org/v2'
 
@@ -20,15 +22,6 @@ function fromCache<T>(key: string): T | undefined {
 
 function setCache<T>(key: string, data: T) {
   cache.set(key, { data, ts: Date.now() })
-}
-
-export function flagEmoji(iso2: string): string {
-  if (!iso2 || iso2.length !== 2) return '🌍'
-  try {
-    return String.fromCodePoint(...iso2.toUpperCase().split('').map(c => 0x1f1e6 - 65 + c.charCodeAt(0)))
-  } catch {
-    return '🌍'
-  }
 }
 
 const CURRENCY_MAP: Record<string, string> = {

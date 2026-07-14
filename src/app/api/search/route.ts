@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getAllCityDots } from '@/lib/cities'
-import { flagEmoji } from '@/lib/country-meta'
+import { flagEmoji } from '@/lib/flag'
 import { COUNTRIES_LIST } from '@/data/countries-list'
 
 export const dynamic = 'force-dynamic'

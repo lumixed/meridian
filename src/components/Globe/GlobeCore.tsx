@@ -4,6 +4,7 @@ import { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import Globe, { type GlobeMethods } from 'react-globe.gl'
 import { ACESFilmicToneMapping } from 'three'
 import { TRADE_ARCS, CITY_ARCS, type ArcDatum } from './arcs'
+import { flagEmoji } from '@/lib/flag'
 import type { CityDot } from '@/types/city'
 import type { SelectedEntity } from '@/types/globe'
 import type { LayerState } from '@/types/layers'
@@ -46,12 +47,6 @@ function getCentroid(geom: GeoFeature['geometry']): [number, number] {
     ring.reduce((s, c) => s + c[1], 0) / ring.length,
     ring.reduce((s, c) => s + c[0], 0) / ring.length,
   ]
-}
-
-function flagOf(code: string) {
-  if (!code || code.length !== 2 || code === '-99') return '🌍'
-  try { return String.fromCodePoint(...code.toUpperCase().split('').map(c => 127397 + c.charCodeAt(0))) }
-  catch { return '🌍' }
 }
 
 function heatColor(pct: number): string {
@@ -336,7 +331,7 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
     const scoreStr = (heatmap || investment) && pct !== undefined
       ? `<span style="margin-left:6px;color:rgba(69,224,192,0.85);font-size:9px">TOP ${Math.round((1 - pct) * 100) + 1}%</span>`
       : ''
-    return `<div style="pointer-events:none;background:rgba(5,10,15,0.95);border:1px solid rgba(69,224,192,0.25);border-radius:4px;padding:5px 10px;color:rgba(255,255,255,0.90);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.04em;display:flex;align-items:center;gap:6px;white-space:nowrap"><span style="font-size:14px">${flagOf(iso2)}</span><span style="text-transform:uppercase">${name}</span>${scoreStr}</div>`
+    return `<div style="pointer-events:none;background:rgba(5,10,15,0.95);border:1px solid rgba(69,224,192,0.25);border-radius:4px;padding:5px 10px;color:rgba(255,255,255,0.90);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.04em;display:flex;align-items:center;gap:6px;white-space:nowrap"><span style="font-size:14px">${flagEmoji(iso2)}</span><span style="text-transform:uppercase">${name}</span>${scoreStr}</div>`
   }, [heatmap, investment, percentileScores])
 
   const makeMarkerEl = useCallback(() => {

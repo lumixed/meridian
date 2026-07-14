@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import CityView from './CityView'
 import ComparePanel from './ComparePanel'
 import CountryView from './CountryView'
-import { flagEmoji } from '@/lib/country-meta'
+import { flagEmoji } from '@/lib/flag'
 import type { SelectedEntity } from '@/types/globe'
 
 interface Props {
