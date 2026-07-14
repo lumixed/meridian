@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { AnimatePresence, motion } from 'framer-motion'
 import SidebarPanel from '@/components/Sidebar/SidebarPanel'
+import DemoMode from '@/components/UI/DemoMode'
 import LayerControl from '@/components/UI/LayerControl'
 import LoadingScreen from '@/components/UI/LoadingScreen'
 import NewsAnchor from '@/components/UI/NewsAnchor'
@@ -24,6 +25,7 @@ export default function AppShell() {
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; altitude?: number } | null>(null)
   const [layers, setLayers] = useState<LayerState>(DEFAULT_LAYERS)
   const [timelineYear, setTimelineYear] = useState(2025)
+  const [demoActive, setDemoActive] = useState(false)
 
   const [compareEntity, setCompareEntity] = useState<SelectedEntity | null>(null)
   const [isComparing, setIsComparing] = useState(false)
@@ -79,6 +81,17 @@ export default function AppShell() {
     closeCompare()
   }, [closeCompare])
 
+  const startDemo = useCallback(() => {
+    setDemoActive(true)
+    setLayers(prev => ({ ...prev, tradeRoutes: true, news: true }))
+  }, [])
+
+  const handleDemoSelect = useCallback((entity: SelectedEntity, lat: number, lng: number, altitude: number) => {
+    setFlyTo({ lat, lng, altitude })
+    setSelectedEntity(entity)
+    setCompareEntity(null)
+  }, [])
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
@@ -123,7 +136,7 @@ export default function AppShell() {
       <AnimatePresence>
         {isLoaded && (
           <>
-            <TopBar onSearchSelect={handleSearchSelect} />
+            <TopBar onSearchSelect={handleSearchSelect} onStartDemo={startDemo} demoActive={demoActive} />
             <Ticker onSelect={handleTickerSelect} />
 
             <LayerControl layers={layers} onToggle={toggleLayer} />
@@ -131,6 +144,12 @@ export default function AppShell() {
             <AnimatePresence>
               {layers.timeline && <TimelineSlider year={timelineYear} onChange={setTimelineYear} />}
             </AnimatePresence>
+
+            <DemoMode
+              isActive={demoActive}
+              onSelectCountry={handleDemoSelect}
+              onStop={() => setDemoActive(false)}
+            />
 
             <NewsAnchor selectedEntity={selectedEntity} />
 

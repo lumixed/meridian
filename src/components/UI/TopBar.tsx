@@ -6,6 +6,8 @@ import type { SelectedEntity } from '@/types/globe'
 
 interface Props {
   onSearchSelect: (lat: number, lng: number, entity: SelectedEntity) => void
+  onStartDemo: () => void
+  demoActive: boolean
 }
 
 function pad(n: number) {
@@ -33,7 +35,7 @@ function UtcClock() {
   )
 }
 
-export default function TopBar({ onSearchSelect }: Props) {
+export default function TopBar({ onSearchSelect, onStartDemo, demoActive }: Props) {
   return (
     <header className="fixed top-0 left-0 w-full h-12 z-40 glass border-b border-[var(--hairline)] flex items-center gap-3 px-3 sm:gap-4 sm:px-5">
       <div className="flex items-center gap-2.5 flex-shrink-0 select-none">
@@ -52,6 +54,14 @@ export default function TopBar({ onSearchSelect }: Props) {
           <span className="w-1.5 h-1.5 rounded-full bg-[#45E0C0] animate-pulse flex-shrink-0" />
           <span className="microlabel whitespace-nowrap">World Bank · Live</span>
         </div>
+        {!demoActive && (
+          <button
+            onClick={onStartDemo}
+            className="font-data text-[10px] tracking-widest uppercase text-white/55 hover:text-white/85 border border-[var(--hairline)] hover:border-[rgba(69,224,192,0.22)] rounded px-2.5 py-1 transition-colors cursor-pointer select-none"
+          >
+            Demo
+          </button>
+        )}
       </div>
     </header>
   )
