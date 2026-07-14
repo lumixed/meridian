@@ -43,12 +43,13 @@ export default function DemoMode({ onSelectCountry, isActive, onStop }: Props) {
   const [transitioning, setTransitioning] = useState(false)
 
   const onSelectRef = useRef(onSelectCountry)
-  onSelectRef.current = onSelectCountry
+  useEffect(() => { onSelectRef.current = onSelectCountry }, [onSelectCountry])
 
   const indexRef = useRef(0)
   const startedAt = useRef(0)
+  const navigateRef = useRef<(idx: number) => void>(() => {})
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const cycleTimer = useRef<ReturnType<typeof setInterval> | null>(null)
+  const cycleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const navigateTo = useCallback((idx: number) => {
@@ -56,6 +57,8 @@ export default function DemoMode({ onSelectCountry, isActive, onStop }: Props) {
     setTransitioning(true)
 
     if (advanceTimer.current) clearTimeout(advanceTimer.current)
+    if (cycleTimer.current) clearTimeout(cycleTimer.current)
+
     advanceTimer.current = setTimeout(() => {
       const c = SHOWCASE[idx]
       onSelectRef.current(
@@ -66,8 +69,14 @@ export default function DemoMode({ onSelectCountry, isActive, onStop }: Props) {
       setProgress(0)
       startedAt.current = Date.now()
       setTransitioning(false)
+
+      cycleTimer.current = setTimeout(() => {
+        navigateRef.current((indexRef.current + 1) % SHOWCASE.length)
+      }, DWELL_MS)
     }, ADVANCE_MS)
   }, [])
+
+  useEffect(() => { navigateRef.current = navigateTo }, [navigateTo])
 
   useEffect(() => {
     if (!isActive) return
@@ -79,13 +88,9 @@ export default function DemoMode({ onSelectCountry, isActive, onStop }: Props) {
       setProgress(Math.min(100, (elapsed / DWELL_MS) * 100))
     }, 80)
 
-    cycleTimer.current = setInterval(() => {
-      navigateTo((indexRef.current + 1) % SHOWCASE.length)
-    }, DWELL_MS)
-
     return () => {
       if (advanceTimer.current) clearTimeout(advanceTimer.current)
-      if (cycleTimer.current) clearInterval(cycleTimer.current)
+      if (cycleTimer.current) clearTimeout(cycleTimer.current)
       if (progressTimer.current) clearInterval(progressTimer.current)
     }
   }, [isActive, navigateTo])
