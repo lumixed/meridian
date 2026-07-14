@@ -8,6 +8,7 @@ import LayerControl from '@/components/UI/LayerControl'
 import LoadingScreen from '@/components/UI/LoadingScreen'
 import NewsAnchor from '@/components/UI/NewsAnchor'
 import SearchBar from '@/components/UI/SearchBar'
+import TimelineSlider from '@/components/UI/TimelineSlider'
 import type { SelectedEntity } from '@/types/globe'
 import { DEFAULT_LAYERS, type LayerState } from '@/types/layers'
 
@@ -21,6 +22,7 @@ export default function AppShell() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; altitude?: number } | null>(null)
   const [layers, setLayers] = useState<LayerState>(DEFAULT_LAYERS)
+  const [timelineYear, setTimelineYear] = useState(2025)
 
   const [compareEntity, setCompareEntity] = useState<SelectedEntity | null>(null)
   const [isComparing, setIsComparing] = useState(false)
@@ -120,6 +122,10 @@ export default function AppShell() {
 
             <LayerControl layers={layers} onToggle={toggleLayer} />
 
+            <AnimatePresence>
+              {layers.timeline && <TimelineSlider year={timelineYear} onChange={setTimelineYear} />}
+            </AnimatePresence>
+
             <NewsAnchor selectedEntity={selectedEntity} />
 
             {selectedEntity && (
@@ -131,6 +137,7 @@ export default function AppShell() {
                 onCloseCompare={closeCompare}
                 onStartCompare={startCompare}
                 showNews={layers.news}
+                timelineYear={layers.timeline ? timelineYear : undefined}
               />
             )}
           </>

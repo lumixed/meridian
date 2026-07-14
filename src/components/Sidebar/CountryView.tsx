@@ -15,6 +15,7 @@ interface Props {
   countryCode: string
   countryName: string
   showNews?: boolean
+  timelineYear?: number
   onCompare?: () => void
 }
 
@@ -431,19 +432,20 @@ function InvestmentBadge({ risk }: { risk: number }) {
   )
 }
 
-export default function CountryView({ countryCode, countryName, showNews = false, onCompare }: Props) {
+export default function CountryView({ countryCode, countryName, showNews = false, timelineYear, onCompare }: Props) {
   const [data, setData] = useState<CountryData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setLoading(true)
     setData(null)
-    fetch(`/api/country/${encodeURIComponent(countryCode)}`)
+    const base = `/api/country/${encodeURIComponent(countryCode)}`
+    fetch(timelineYear ? `${base}?year=${timelineYear}` : base)
       .then(r => r.json())
       .then(d => { if (d.success) setData(d.country) })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [countryCode])
+  }, [countryCode, timelineYear])
 
   if (loading) return (
     <div className="p-4 space-y-3">
@@ -483,6 +485,12 @@ export default function CountryView({ countryCode, countryName, showNews = false
               <span className="truncate">{part}</span>
             </span>
           ))}
+          {timelineYear && (
+            <span className="flex items-center gap-1.5">
+              <span className="text-white/20">·</span>
+              <span className="text-[#45E0C0]/60">{timelineYear}</span>
+            </span>
+          )}
         </p>
         <span
           className="font-data text-[8px] uppercase tracking-[0.12em] px-2 py-1 rounded flex items-center gap-1.5 ml-auto flex-shrink-0"

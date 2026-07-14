@@ -14,6 +14,7 @@ interface Props {
   onCloseCompare?: () => void
   onStartCompare?: () => void
   showNews?: boolean
+  timelineYear?: number
 }
 
 function resolveCode(entity: SelectedEntity | null | undefined) {
@@ -22,7 +23,7 @@ function resolveCode(entity: SelectedEntity | null | undefined) {
 }
 
 export default function SidebarPanel({
-  entity, compareEntity, onClose, onCloseCompare, onStartCompare, showNews = false,
+  entity, compareEntity, onClose, onCloseCompare, onStartCompare, showNews = false, timelineYear,
 }: Props) {
   const isCity = entity.type === 'city'
   const flag = !isCity && entity.countryCode ? flagEmoji(entity.countryCode) : null
@@ -56,6 +57,7 @@ export default function SidebarPanel({
             <div className="min-w-0">
               <p className="microlabel mb-1.5">
                 {isCity ? entity.country : hasCompare ? 'Country Comparison' : 'Economic Overview'}
+                {timelineYear && !hasCompare && <span className="ml-2 text-[#45E0C0]/40">· {timelineYear}</span>}
               </p>
               <h2 className="font-display text-[19px] font-semibold text-white leading-tight truncate">
                 {hasCompare ? `${entity.name} vs ${compareEntity!.name}` : entity.name}
@@ -92,6 +94,7 @@ export default function SidebarPanel({
               countryCode={codeA}
               countryName={entity.name}
               showNews={showNews}
+              timelineYear={timelineYear}
               onCompare={onStartCompare}
             />
           )}
