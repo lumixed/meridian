@@ -11,6 +11,7 @@ import NewsAnchor from '@/components/UI/NewsAnchor'
 import Ticker, { type TickerItem } from '@/components/UI/Ticker'
 import TimelineSlider from '@/components/UI/TimelineSlider'
 import TopBar from '@/components/UI/TopBar'
+import { useUrlState, type RestoredUrlState } from '@/hooks/useUrlState'
 import type { SelectedEntity } from '@/types/globe'
 import { DEFAULT_LAYERS, type LayerState } from '@/types/layers'
 
@@ -91,6 +92,26 @@ export default function AppShell() {
     setSelectedEntity(entity)
     setCompareEntity(null)
   }, [])
+
+  const handleUrlRestore = useCallback((restored: RestoredUrlState) => {
+    if (restored.selection) {
+      setSelectedEntity(restored.selection)
+      if (restored.compare) setCompareEntity(restored.compare)
+    }
+    if (restored.layers) setLayers(restored.layers)
+    if (restored.year !== null) setTimelineYear(restored.year)
+  }, [])
+
+  useUrlState({
+    isLoaded,
+    demoActive,
+    selectedEntity,
+    compareEntity,
+    layers,
+    timelineYear,
+    onRestore: handleUrlRestore,
+    onFlyTo: setFlyTo,
+  })
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
