@@ -134,3 +134,21 @@ body {
 .blink {
   animation: md-blink 1s step-end infinite;
 }
+
+@media (max-width: 639px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .ticker-track {
+    animation-duration: 45s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track,
+  .blink {
+    animation: none;
+  }
+}
