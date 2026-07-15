@@ -154,26 +154,26 @@ export default function AppShell() {
         layers={layers}
       />
 
-      <AnimatePresence>
-        {isLoaded && (
-          <>
-            <TopBar onSearchSelect={handleSearchSelect} onStartDemo={startDemo} demoActive={demoActive} />
-            <Ticker onSelect={handleTickerSelect} />
+      {isLoaded && (
+        <>
+          <TopBar onSearchSelect={handleSearchSelect} onStartDemo={startDemo} demoActive={demoActive} />
+          <Ticker onSelect={handleTickerSelect} />
 
-            <LayerControl layers={layers} onToggle={toggleLayer} />
+          <LayerControl layers={layers} onToggle={toggleLayer} />
 
-            <AnimatePresence>
-              {layers.timeline && <TimelineSlider year={timelineYear} onChange={setTimelineYear} />}
-            </AnimatePresence>
+          <AnimatePresence>
+            {layers.timeline && <TimelineSlider year={timelineYear} onChange={setTimelineYear} />}
+          </AnimatePresence>
 
-            <DemoMode
-              isActive={demoActive}
-              onSelectCountry={handleDemoSelect}
-              onStop={() => setDemoActive(false)}
-            />
+          <DemoMode
+            isActive={demoActive}
+            onSelectCountry={handleDemoSelect}
+            onStop={() => setDemoActive(false)}
+          />
 
-            <NewsAnchor selectedEntity={selectedEntity} />
+          <NewsAnchor selectedEntity={selectedEntity} />
 
+          <AnimatePresence>
             {selectedEntity && (
               <SidebarPanel
                 key={selectedEntity.id}
@@ -186,9 +186,9 @@ export default function AppShell() {
                 timelineYear={layers.timeline ? timelineYear : undefined}
               />
             )}
-          </>
-        )}
-      </AnimatePresence>
+          </AnimatePresence>
+        </>
+      )}
     </div>
   )
 }

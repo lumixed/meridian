@@ -8,6 +8,7 @@ interface CacheEntry {
 
 const indicatorCache = new Map<string, CacheEntry>()
 const yearCache = new Map<string, string>()
+const inFlight = new Map<string, Promise<number | null>>()
 
 function getCached(key: string): number | null | undefined {
   const e = indicatorCache.get(key)
@@ -24,39 +25,46 @@ function setCached(key: string, val: number | null) {
   indicatorCache.set(key, { data: val, ts: Date.now() })
 }
 
+async function requestIndicator(key: string, url: string): Promise<number | null> {
+  const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
+  if (!res.ok) return null
+
+  const json = await res.json()
+  const rows: { date?: string; value?: number | string | null }[] = json?.[1] ?? []
+
+  for (const row of rows) {
+    if (row.value === null || row.value === undefined) continue
+    const v = parseFloat(String(row.value))
+    if (!isNaN(v)) {
+      if (row.date) yearCache.set(key, String(row.date))
+      setCached(key, v)
+      return v
+    }
+  }
+
+  setCached(key, null)
+  return null
+}
+
 async function fetchIndicator(countryCode: string, indicator: string, year?: number): Promise<number | null> {
   const key = `${countryCode}:${indicator}:${year ?? 'latest'}`
+
   const hit = getCached(key)
   if (hit !== undefined) return hit
 
-  try {
-    const url = year
-      ? `${BASE}/country/${countryCode}/indicator/${indicator}?format=json&date=${year}&per_page=1`
-      : `${BASE}/country/${countryCode}/indicator/${indicator}?format=json&mrv=5&per_page=5`
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
-    if (!res.ok) {
-      setCached(key, null)
-      return null
-    }
+  const pending = inFlight.get(key)
+  if (pending) return pending
 
-    const json = await res.json()
-    const rows: { date?: string; value?: number | string | null }[] = json?.[1] ?? []
+  const url = year
+    ? `${BASE}/country/${countryCode}/indicator/${indicator}?format=json&date=${year}&per_page=1`
+    : `${BASE}/country/${countryCode}/indicator/${indicator}?format=json&mrv=5&per_page=5`
 
-    for (const row of rows) {
-      if (row.value !== null && row.value !== undefined) {
-        const v = parseFloat(String(row.value))
-        if (!isNaN(v)) {
-          if (row.date) yearCache.set(key, String(row.date))
-          setCached(key, v)
-          return v
-        }
-      }
-    }
-    setCached(key, null)
-    return null
-  } catch {
-    return null
-  }
+  const request = requestIndicator(key, url)
+    .catch(() => null)
+    .finally(() => inFlight.delete(key))
+
+  inFlight.set(key, request)
+  return request
 }
 
 const IND = {
