@@ -7,6 +7,7 @@ import InvestmentReport from './InvestmentReport'
 import NewsPanel from './NewsPanel'
 import Sparkline from '@/components/UI/Sparkline'
 import { useCountUp } from '@/hooks/useCountUp'
+import { TERRITORY_INFO } from '@/data/territories'
 import type { HistoryPayload } from '@/app/api/history/[countryCode]/route'
 import type { AnchorBriefing } from '@/types/briefing'
 import type { CountryData } from '@/types/country'
@@ -432,9 +433,53 @@ function InvestmentBadge({ risk }: { risk: number }) {
   )
 }
 
+function DataUnavailable({ name, countryCode, onRetry }: {
+  name: string
+  countryCode: string
+  onRetry: () => void
+}) {
+  const info = TERRITORY_INFO[countryCode.toUpperCase()]
+
+  return (
+    <div className="p-4 space-y-3">
+      <div className="card card--flat p-3.5">
+        <p className="font-display text-[15px] font-semibold text-white/60">{name}</p>
+        {info && <p className="font-data text-[10px] uppercase tracking-[0.12em] text-[#45E0C0]/50 mt-1">{info.type}</p>}
+      </div>
+
+      {info && (
+        <div className="card card--flat p-3.5 space-y-2.5">
+          <SectionHead title="Geographic Information" />
+          <div className="space-y-2 text-[12px] text-white/50">
+            <p className="font-data text-[11px] text-white/55">{info.geo}</p>
+            <p className="text-white/40 leading-relaxed">{info.note}</p>
+            {info.stations && <p className="font-data text-[10px] text-white/40">{info.stations}</p>}
+          </div>
+        </div>
+      )}
+
+      <div className="card p-3.5" style={{ borderLeftColor: 'rgba(255,176,32,0.45)' }}>
+        <p className="microlabel mb-2" style={{ color: 'rgba(255,176,32,0.55)' }}>Data Coverage Status</p>
+        <p className="text-[12px] text-white/35 leading-relaxed">
+          {info?.coverage ?? 'No indicators came back for this selection. That usually means the World Bank does not publish data for this territory, but it can also happen when the upstream feed is briefly unavailable.'}
+        </p>
+        {!info && (
+          <button
+            onClick={onRetry}
+            className="mt-3 font-data text-[10px] uppercase tracking-[0.14em] text-[#45E0C0]/60 hover:text-[#45E0C0] transition-colors"
+          >
+            ↺ Retry
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function CountryView({ countryCode, countryName, showNews = false, timelineYear, onCompare }: Props) {
   const [data, setData] = useState<CountryData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     setLoading(true)
@@ -445,7 +490,7 @@ export default function CountryView({ countryCode, countryName, showNews = false
       .then(d => { if (d.success) setData(d.country) })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [countryCode, timelineYear])
+  }, [countryCode, timelineYear, attempt])
 
   if (loading) return (
     <div className="p-4 space-y-3">
@@ -454,14 +499,15 @@ export default function CountryView({ countryCode, countryName, showNews = false
   )
 
   const hasData = (data?.gdp_billion ?? 0) > 0 || (data?.population_m ?? 0) > 0
-  if (!hasData) return (
-    <div className="p-6 text-center">
-      <p className="font-display text-[15px] text-white/55">{countryName}</p>
-      <p className="text-[12px] text-white/30 mt-2 leading-relaxed">
-        World Bank does not publish economic indicators for this territory.
-      </p>
-    </div>
-  )
+  if (!hasData) {
+    return (
+      <DataUnavailable
+        name={countryName}
+        countryCode={countryCode}
+        onRetry={() => setAttempt(n => n + 1)}
+      />
+    )
+  }
 
   const pop = data?.population_m ?? 0
   const gdp = data?.gdp_billion ?? 0
