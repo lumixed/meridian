@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { CountryData } from '@/types/country'
-import type { InvestmentReport as Report, Recommendation, SectorOutlook } from '@/types/report'
+import type { InvestmentReport as Report, Recommendation, ReportRequest, SectorOutlook } from '@/types/report'
 
 const REC_STYLES: Record<Recommendation, { color: string; bg: string; border: string }> = {
   'STRONG BUY': { color: '#00ff8c', bg: 'rgba(0,255,140,0.08)', border: 'rgba(0,255,140,0.25)' },
@@ -136,6 +136,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
+type TradeSnapshot = Pick<
+  ReportRequest,
+  'exports' | 'imports' | 'tradeBalance' | 'tradeOpenness' | 'tradePartners'
+>
+
 interface Props {
   countryCode: string
   countryName: string
@@ -165,13 +170,27 @@ export default function InvestmentReport({ countryCode, countryName, countryData
     setError(false)
 
     let articles: string[] = []
-    try {
-      const nRes = await fetch(`/api/news/${encodeURIComponent(countryCode)}`)
-      if (nRes.ok) {
-        const d = await nRes.json()
-        articles = (d.articles ?? []).slice(0, 5).map((a: { title: string }) => a.title)
+    let trade: TradeSnapshot = {}
+
+    const [newsRes, tradeRes] = await Promise.allSettled([
+      fetch(`/api/news/${encodeURIComponent(countryCode)}`),
+      fetch(`/api/trade/${encodeURIComponent(countryCode)}`),
+    ])
+
+    if (newsRes.status === 'fulfilled' && newsRes.value.ok) {
+      const d = await newsRes.value.json()
+      articles = (d.articles ?? []).slice(0, 5).map((a: { title: string }) => a.title)
+    }
+    if (tradeRes.status === 'fulfilled' && tradeRes.value.ok) {
+      const d = await tradeRes.value.json()
+      trade = {
+        exports: d.exports_b ?? null,
+        imports: d.imports_b ?? null,
+        tradeBalance: d.balance_b ?? null,
+        tradeOpenness: d.trade_pct ?? null,
+        tradePartners: d.partners ?? [],
       }
-    } catch {}
+    }
 
     try {
       const d = countryData
@@ -192,6 +211,7 @@ export default function InvestmentReport({ countryCode, countryName, countryData
           gdpPerCapita: d?.gdpPerCapita ?? null,
           riskScore: d?.risk_score ?? null,
           innovationScore: d?.innovationScore ?? null,
+          ...trade,
         }),
       })
       if (!res.ok) throw new Error('report API error')
