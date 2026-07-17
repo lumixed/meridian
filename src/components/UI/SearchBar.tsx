@@ -12,7 +12,6 @@ interface Result {
   lng: number
   type: 'city' | 'country' | 'capital'
   countryCode?: string
-  flag?: string
 }
 
 interface Props {

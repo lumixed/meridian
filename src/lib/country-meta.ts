@@ -105,46 +105,29 @@ export async function getCountryMeta(iso2: string): Promise<CountryMeta | null> 
   }
 }
 
-export interface CountrySummary {
-  code: string
-  name: string
-  capital: string
-  region: string
-  lat: number
-  lng: number
-  flag: string
-}
+let codesCache: Set<string> | null = null
+let codesTs = 0
 
-let listCache: CountrySummary[] | null = null
-let listTs = 0
-
-export async function getAllCountries(): Promise<CountrySummary[]> {
-  if (listCache && Date.now() - listTs < CACHE_TTL_MS) return listCache
+export async function getSovereignCodes(): Promise<Set<string>> {
+  if (codesCache && Date.now() - codesTs < CACHE_TTL_MS) return codesCache
 
   try {
     const res = await fetch(`${WB_BASE}/country?format=json&per_page=300`, {
       signal: AbortSignal.timeout(10000),
     })
-    if (!res.ok) return listCache ?? []
+    if (!res.ok) return codesCache ?? new Set()
 
     const json = await res.json()
     const rows: WbCountryRow[] = json?.[1] ?? []
 
-    listCache = rows
-      .filter(r => r.iso2Code && r.iso2Code.length === 2 && r.capitalCity && r.region?.id)
-      .map(r => ({
-        code: r.iso2Code as string,
-        name: r.name ?? '',
-        capital: r.capitalCity ?? '',
-        region: r.region?.value ?? '',
-        lat: parseFloat(r.latitude ?? '') || 0,
-        lng: parseFloat(r.longitude ?? '') || 0,
-        flag: flagEmoji(r.iso2Code as string),
-      }))
-
-    listTs = Date.now()
-    return listCache
+    codesCache = new Set(
+      rows
+        .filter(r => r.iso2Code && r.iso2Code.length === 2 && r.capitalCity && r.region?.id)
+        .map(r => r.iso2Code as string),
+    )
+    codesTs = Date.now()
+    return codesCache
   } catch {
-    return listCache ?? []
+    return codesCache ?? new Set()
   }
 }

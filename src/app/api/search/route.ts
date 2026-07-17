@@ -13,7 +13,6 @@ interface SearchResult {
   lng: number
   type: 'country' | 'capital' | 'city'
   countryCode?: string
-  flag?: string
 }
 
 const TYPE_ORDER = { country: 0, capital: 1, city: 2 }
@@ -42,7 +41,6 @@ export async function GET(req: Request) {
       lng: c.lng,
       type: 'country',
       countryCode: c.code,
-      flag,
     })
   }
 
@@ -57,7 +55,6 @@ export async function GET(req: Request) {
       lng: c.lng,
       type: 'capital',
       countryCode: c.code,
-      flag,
     })
   }
 

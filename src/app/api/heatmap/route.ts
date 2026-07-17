@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAllCountries } from '@/lib/country-meta'
+import { getSovereignCodes } from '@/lib/country-meta'
 
 export const revalidate = 86400
 
@@ -8,14 +8,13 @@ const GDP_PER_CAPITA =
 
 export async function GET() {
   try {
-    const [countries, gdpRes] = await Promise.all([
-      getAllCountries(),
+    const [validCodes, gdpRes] = await Promise.all([
+      getSovereignCodes(),
       fetch(GDP_PER_CAPITA, { signal: AbortSignal.timeout(12000) }),
     ])
 
     if (!gdpRes.ok) return NextResponse.json({ scores: {} })
 
-    const validCodes = new Set(countries.map(c => c.code).filter(Boolean))
     const json = await gdpRes.json()
     const rows: { country?: { id?: string }; value?: number | null }[] = json?.[1] ?? []
 
