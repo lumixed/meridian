@@ -498,7 +498,17 @@ export default function CountryView({ countryCode, countryName, showNews = false
     </div>
   )
 
-  const hasData = (data?.gdp_billion ?? 0) > 0 || (data?.population_m ?? 0) > 0
+  const indicators: (number | null | undefined)[] = [
+    data?.gdp_billion || null,
+    data?.population_m || null,
+    data?.gdpPerCapita,
+    data?.gdpGrowth,
+    data?.inflation,
+    data?.unemployment,
+    data?.lifeExpectancy,
+  ]
+  const hasData = indicators.some(v => v != null)
+
   if (!hasData) {
     return (
       <DataUnavailable
