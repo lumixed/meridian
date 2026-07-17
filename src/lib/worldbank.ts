@@ -1,4 +1,5 @@
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000
+const MAX_ATTEMPTS = 3
 const BASE = 'https://api.worldbank.org/v2'
 
 interface CacheEntry {
@@ -25,24 +26,38 @@ function setCached(key: string, val: number | null) {
   indicatorCache.set(key, { data: val, ts: Date.now() })
 }
 
+function wait(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 async function requestIndicator(key: string, url: string): Promise<number | null> {
-  const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
-  if (!res.ok) return null
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (attempt > 0) await wait(250 * attempt)
 
-  const json = await res.json()
-  const rows: { date?: string; value?: number | string | null }[] = json?.[1] ?? []
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
+      if (!res.ok) continue
 
-  for (const row of rows) {
-    if (row.value === null || row.value === undefined) continue
-    const v = parseFloat(String(row.value))
-    if (!isNaN(v)) {
-      if (row.date) yearCache.set(key, String(row.date))
-      setCached(key, v)
-      return v
+      const json = await res.json()
+      const rows: { date?: string; value?: number | string | null }[] = json?.[1] ?? []
+
+      for (const row of rows) {
+        if (row.value === null || row.value === undefined) continue
+        const v = parseFloat(String(row.value))
+        if (!isNaN(v)) {
+          if (row.date) yearCache.set(key, String(row.date))
+          setCached(key, v)
+          return v
+        }
+      }
+
+      setCached(key, null)
+      return null
+    } catch {
+      continue
     }
   }
 
-  setCached(key, null)
   return null
 }
 
