@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { AI_MODEL, generateJSON } from '@/lib/ai'
+import { limitAiRequest } from '@/lib/rate-limit'
 import { getCountrySectors } from '@/lib/sectors'
 import type { InvestmentReport, Recommendation, ReportRequest, SectorOutlook } from '@/types/report'
 
@@ -335,6 +336,9 @@ function mergeReport(p: ReportBody, r: ReportRequest): ReportBody {
 }
 
 export async function POST(req: Request) {
+  const limited = limitAiRequest(req, 'report', 6)
+  if (limited) return limited
+
   let body: ReportRequest
   try {
     body = await req.json()

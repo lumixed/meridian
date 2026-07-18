@@ -1,4 +1,5 @@
 import { AI_MODEL, aiEnabled, getClient } from '@/lib/ai'
+import { limitAiRequest } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 55
@@ -7,6 +8,9 @@ const OFFLINE_NOTE =
   'AI intelligence is offline (no ANTHROPIC_API_KEY configured). All metric panels above are live World Bank data.'
 
 export async function GET(req: Request, { params }: { params: Promise<{ entityId: string }> }) {
+  const limited = limitAiRequest(req, 'insight', 20)
+  if (limited) return limited
+
   const { entityId } = await params
   const id = decodeURIComponent(entityId)
   const url = new URL(req.url)

@@ -2,16 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { getWorldBankData, snapshotYear } from '@/lib/worldbank'
 import snapshot from '@/data/indicators-snapshot.json'
 
-const INDICATORS: Record<string, string> = {
-  'SP.POP.TOTL': 'population_m',
-  'NY.GDP.MKTP.CD': 'gdp_billion',
-  'NY.GDP.MKTP.KD.ZG': 'gdpGrowth',
-  'NY.GDP.PCAP.CD': 'gdpPerCapita',
-  'FP.CPI.TOTL.ZG': 'inflation',
-  'SL.UEM.TOTL.ZS': 'unemployment',
-  'SP.DYN.LE00.IN': 'lifeExpectancy',
-}
-
 function indicatorOf(url: string): string {
   const match = url.match(/indicator\/([A-Z0-9.]+)\?/)
   return match ? match[1] : ''

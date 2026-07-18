@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { AI_MODEL, generateJSON } from '@/lib/ai'
+import { limitAiRequest } from '@/lib/rate-limit'
 import type { AnchorBriefing, BriefingRequest } from '@/types/briefing'
 
 export const dynamic = 'force-dynamic'
@@ -121,6 +122,9 @@ function fallbackBriefing(b: BriefingRequest): AnchorBriefing {
 }
 
 export async function POST(req: Request) {
+  const limited = limitAiRequest(req, 'anchor', 12)
+  if (limited) return limited
+
   let body: BriefingRequest
   try {
     body = await req.json()
