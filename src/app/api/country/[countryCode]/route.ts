@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getCitiesByCountryCode } from '@/lib/cities'
-import { getWorldBankData } from '@/lib/worldbank'
+import { getWorldBankData, type WorldBankData } from '@/lib/worldbank'
 import { getCountryMeta } from '@/lib/country-meta'
 import { computeInnovation, computeRiskScore } from '@/lib/scores'
 import type { CountryData } from '@/types/country'
@@ -19,9 +19,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ countryC
       getCountryMeta(code),
     ])
 
-    const wbData = wb.status === 'fulfilled' ? wb.value : {
+    const wbData: WorldBankData = wb.status === 'fulfilled' ? wb.value : {
       population_m: null, gdp_billion: null, gdpGrowth: null, gdpPerCapita: null,
       inflation: null, unemployment: null, lifeExpectancy: null, dataYear: null,
+      source: 'live',
     }
     const metaData = meta.status === 'fulfilled' ? meta.value : null
 
@@ -47,6 +48,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ countryC
       risk_score: risk,
       innovationScore: innovation,
       dataYear: wbData.dataYear ?? undefined,
+      source: wbData.source,
       cities: getCitiesByCountryCode(code),
     }
 

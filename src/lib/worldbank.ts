@@ -1,30 +1,11 @@
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000
+import snapshot from '@/data/indicators-snapshot.json'
+
+const REVALIDATE_SECONDS = 86400
 const MAX_ATTEMPTS = 3
 const BASE = 'https://api.worldbank.org/v2'
 
-interface CacheEntry {
-  data: number | null
-  ts: number
-}
-
-const indicatorCache = new Map<string, CacheEntry>()
 const yearCache = new Map<string, string>()
 const inFlight = new Map<string, Promise<number | null>>()
-
-function getCached(key: string): number | null | undefined {
-  const e = indicatorCache.get(key)
-  if (!e) return undefined
-  if (Date.now() - e.ts > CACHE_TTL_MS) {
-    indicatorCache.delete(key)
-    yearCache.delete(key)
-    return undefined
-  }
-  return e.data
-}
-
-function setCached(key: string, val: number | null) {
-  indicatorCache.set(key, { data: val, ts: Date.now() })
-}
 
 function wait(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -35,7 +16,10 @@ async function requestIndicator(key: string, url: string): Promise<number | null
     if (attempt > 0) await wait(250 * attempt)
 
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(8000),
+        next: { revalidate: REVALIDATE_SECONDS },
+      })
       if (!res.ok) continue
 
       const json = await res.json()
@@ -46,12 +30,10 @@ async function requestIndicator(key: string, url: string): Promise<number | null
         const v = parseFloat(String(row.value))
         if (!isNaN(v)) {
           if (row.date) yearCache.set(key, String(row.date))
-          setCached(key, v)
           return v
         }
       }
 
-      setCached(key, null)
       return null
     } catch {
       continue
@@ -63,9 +45,6 @@ async function requestIndicator(key: string, url: string): Promise<number | null
 
 async function fetchIndicator(countryCode: string, indicator: string, year?: number): Promise<number | null> {
   const key = `${countryCode}:${indicator}:${year ?? 'latest'}`
-
-  const hit = getCached(key)
-  if (hit !== undefined) return hit
 
   const pending = inFlight.get(key)
   if (pending) return pending
@@ -92,6 +71,8 @@ const IND = {
   lifeExpectancy: 'SP.DYN.LE00.IN',
 }
 
+export type DataSource = 'live' | 'mixed' | 'snapshot'
+
 export interface WorldBankData {
   population_m: number | null
   gdp_billion: number | null
@@ -101,6 +82,20 @@ export interface WorldBankData {
   unemployment: number | null
   lifeExpectancy: number | null
   dataYear: number | null
+  source: DataSource
+}
+
+type IndicatorField = Exclude<keyof WorldBankData, 'dataYear' | 'source'>
+
+interface SnapshotFile {
+  year: number
+  countries: Record<string, Partial<Record<IndicatorField, number>>>
+}
+
+const SNAPSHOT = snapshot as SnapshotFile
+
+export function snapshotYear(): number {
+  return SNAPSHOT.year
 }
 
 export async function getWorldBankData(countryCode: string, year?: number): Promise<WorldBankData> {
@@ -116,9 +111,7 @@ export async function getWorldBankData(countryCode: string, year?: number): Prom
     fetchIndicator(code, IND.lifeExpectancy, year),
   ])
 
-  const rawYear = yearCache.get(`${code}:${IND.gdp}:${year ?? 'latest'}`)
-
-  return {
+  const live: Record<IndicatorField, number | null> = {
     population_m: pop !== null ? Math.round(pop / 1e4) / 100 : null,
     gdp_billion: gdp !== null ? Math.round(gdp / 1e7) / 100 : null,
     gdpGrowth: gdpG !== null ? Math.round(gdpG * 10) / 10 : null,
@@ -126,6 +119,40 @@ export async function getWorldBankData(countryCode: string, year?: number): Prom
     inflation: inf !== null ? Math.round(inf * 10) / 10 : null,
     unemployment: unemp !== null ? Math.round(unemp * 10) / 10 : null,
     lifeExpectancy: lifeExp !== null ? Math.round(lifeExp * 10) / 10 : null,
-    dataYear: rawYear ? parseInt(rawYear, 10) : null,
+  }
+
+  const rawYear = yearCache.get(`${code}:${IND.gdp}:${year ?? 'latest'}`)
+  const liveYear = rawYear ? parseInt(rawYear, 10) : null
+
+  const fields = Object.keys(live) as IndicatorField[]
+  const liveCount = fields.filter(f => live[f] !== null).length
+
+  if (liveCount === fields.length) {
+    return { ...live, dataYear: liveYear, source: 'live' }
+  }
+
+  const fallback = year ? undefined : SNAPSHOT.countries[code]
+  if (!fallback) {
+    return { ...live, dataYear: liveYear, source: 'live' }
+  }
+
+  const merged = { ...live }
+  let filled = 0
+  for (const field of fields) {
+    if (merged[field] !== null) continue
+    const value = fallback[field]
+    if (value === undefined) continue
+    merged[field] = value
+    filled++
+  }
+
+  if (filled === 0) {
+    return { ...merged, dataYear: liveYear, source: 'live' }
+  }
+
+  return {
+    ...merged,
+    dataYear: liveYear ?? SNAPSHOT.year,
+    source: liveCount === 0 ? 'snapshot' : 'mixed',
   }
 }

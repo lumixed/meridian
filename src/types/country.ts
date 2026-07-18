@@ -17,6 +17,7 @@ export interface CountryData {
   risk_score: number
   innovationScore?: number
   dataYear?: number
+  source?: 'live' | 'mixed' | 'snapshot'
 
   cities?: Array<{
     cityId: string

@@ -20,6 +20,39 @@ interface Props {
   onCompare?: () => void
 }
 
+const SOURCE_STYLES = {
+  live: { color: '#3DDC97', label: 'Verified · World Bank' },
+  mixed: { color: '#FFB020', label: 'Partly cached · World Bank' },
+  snapshot: { color: '#FFB020', label: 'Cached snapshot' },
+} as const
+
+function SourceBadge({ source, year }: { source: NonNullable<CountryData['source']>; year?: number }) {
+  const { color, label } = SOURCE_STYLES[source]
+  const title = source === 'live'
+    ? 'Every indicator came straight from the World Bank API.'
+    : 'The World Bank API did not return every indicator, so the gaps are filled from a bundled snapshot.'
+
+  return (
+    <span
+      title={title}
+      className="font-data text-[8px] uppercase tracking-[0.12em] px-2 py-1 rounded flex items-center gap-1.5 ml-auto flex-shrink-0"
+      style={{ background: `${color}0f`, border: `1px solid ${color}38`, color }}
+    >
+      {source === 'live' ? (
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
+          <path d="M1.5 4L3 5.5L6.5 2" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ) : (
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
+          <circle cx="4" cy="4" r="3" stroke={color} strokeWidth="1" />
+          <path d="M4 2.2V4l1.2.9" stroke={color} strokeWidth="1" strokeLinecap="round" />
+        </svg>
+      )}
+      {label}{year ? ` ${year}` : ''}
+    </span>
+  )
+}
+
 function SectionHead({ title, aside, className = 'mb-3' }: { title: string; aside?: string; className?: string }) {
   return (
     <div className={`section-head ${className}`}>
@@ -548,15 +581,7 @@ export default function CountryView({ countryCode, countryName, showNews = false
             </span>
           )}
         </p>
-        <span
-          className="font-data text-[8px] uppercase tracking-[0.12em] px-2 py-1 rounded flex items-center gap-1.5 ml-auto flex-shrink-0"
-          style={{ background: 'rgba(61,220,151,0.06)', border: '1px solid rgba(61,220,151,0.22)', color: '#3DDC97' }}
-        >
-          <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-            <path d="M1.5 4L3 5.5L6.5 2" stroke="#3DDC97" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Verified · World Bank{wbYear}
-        </span>
+        <SourceBadge source={data?.source ?? 'live'} year={data?.dataYear} />
       </motion.div>
 
       <InvestmentBadge risk={risk} />
