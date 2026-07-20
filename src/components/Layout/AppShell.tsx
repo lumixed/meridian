@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import GlobeStage from '@/components/Globe/GlobeStage'
 import SidebarPanel from '@/components/Sidebar/SidebarPanel'
+import CommandPalette from '@/components/UI/CommandPalette'
 import DemoMode from '@/components/UI/DemoMode'
 import LayerControl from '@/components/UI/LayerControl'
 import NewsAnchor from '@/components/UI/NewsAnchor'
@@ -21,6 +22,7 @@ export default function AppShell() {
   const [layers, setLayers] = useState<LayerState>(DEFAULT_LAYERS)
   const [timelineYear, setTimelineYear] = useState(2025)
   const [demoActive, setDemoActive] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
 
   const [compareEntity, setCompareEntity] = useState<SelectedEntity | null>(null)
   const [isComparing, setIsComparing] = useState(false)
@@ -109,13 +111,19 @@ export default function AppShell() {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return
+      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setPaletteOpen(open => !open)
+        return
+      }
+
+      if (e.key !== 'Escape' || paletteOpen) return
       if (isComparing || compareEntity) closeCompare()
       else if (selectedEntity) closeSidebar()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isComparing, compareEntity, selectedEntity, closeCompare, closeSidebar])
+  }, [isComparing, compareEntity, selectedEntity, paletteOpen, closeCompare, closeSidebar])
 
   return (
     <div className="relative w-screen h-screen bg-[#04070c] overflow-hidden">
@@ -148,9 +156,22 @@ export default function AppShell() {
         layers={layers}
       />
 
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        onSelect={handleSearchSelect}
+        layers={layers}
+        onToggleLayer={toggleLayer}
+        onStartDemo={startDemo}
+      />
+
       {isLoaded && (
         <>
-          <TopBar onSearchSelect={handleSearchSelect} onStartDemo={startDemo} demoActive={demoActive} />
+          <TopBar
+            onStartDemo={startDemo}
+            demoActive={demoActive}
+            onOpenPalette={() => setPaletteOpen(true)}
+          />
           <Ticker onSelect={handleTickerSelect} />
 
           <LayerControl layers={layers} onToggle={toggleLayer} />
