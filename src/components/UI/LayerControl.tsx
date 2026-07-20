@@ -87,7 +87,7 @@ export default function LayerControl({ layers, onToggle }: Props) {
                 aria-label={label}
                 aria-pressed={active}
                 className={`group relative w-7 h-7 sm:w-[34px] sm:h-[34px] flex items-center justify-center transition-colors ${
-                  active ? 'text-[#45E0C0] bg-[rgba(69,224,192,0.08)]' : 'text-white/35 hover:text-white/70'
+                  active ? 'text-[#45E0C0] bg-[rgba(69,224,192,0.08)]' : 'text-white/52 hover:text-white/70'
                 }`}
               >
                 {active && <span className="absolute left-0 top-1 bottom-1 w-[2px] bg-[#45E0C0]" aria-hidden="true" />}
@@ -95,7 +95,7 @@ export default function LayerControl({ layers, onToggle }: Props) {
 
                 <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2.5 hidden group-hover:block glass border border-white/[0.08] rounded px-2.5 py-1.5 whitespace-nowrap text-left z-10">
                   <span className="microlabel block">{label}</span>
-                  <span className="block text-[10px] text-white/40 mt-0.5">{desc}</span>
+                  <span className="block text-[10px] text-white/50 mt-0.5">{desc}</span>
                 </span>
               </button>
             )

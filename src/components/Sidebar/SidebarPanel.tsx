@@ -69,7 +69,7 @@ export default function SidebarPanel({
             {hasCompare && onCloseCompare && (
               <button
                 onClick={onCloseCompare}
-                className="font-data text-[9px] uppercase tracking-[0.14em] px-2.5 py-1.5 rounded border border-white/10 text-white/35 hover:text-[#45E0C0]/70 hover:border-[#45E0C0]/25 transition-colors"
+                className="font-data text-[9px] uppercase tracking-[0.14em] px-2.5 py-1.5 rounded border border-white/10 text-white/52 hover:text-[#45E0C0]/70 hover:border-[#45E0C0]/25 transition-colors"
               >
                 Exit Compare
               </button>
@@ -77,7 +77,7 @@ export default function SidebarPanel({
             <button
               onClick={onClose}
               aria-label="Close panel"
-              className="w-7 h-7 rounded border border-white/10 flex items-center justify-center font-data text-[11px] text-white/30 hover:text-[#45E0C0] hover:border-[#45E0C0]/40 hover:bg-[rgba(69,224,192,0.06)] transition-colors leading-none"
+              className="w-7 h-7 rounded border border-white/10 flex items-center justify-center font-data text-[11px] text-white/48 hover:text-[#45E0C0] hover:border-[#45E0C0]/40 hover:bg-[rgba(69,224,192,0.06)] transition-colors leading-none"
             >
               ✕
             </button>

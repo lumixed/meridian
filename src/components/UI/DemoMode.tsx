@@ -117,7 +117,7 @@ export default function DemoMode({ onSelectCountry, isActive, onStop }: Props) {
           </div>
           <button
             onClick={onStop}
-            className="font-data text-[9px] uppercase tracking-[0.18em] text-white/30 hover:text-white/65 transition-colors"
+            className="font-data text-[9px] uppercase tracking-[0.18em] text-white/48 hover:text-white/65 transition-colors"
           >
             STOP ×
           </button>
@@ -134,9 +134,9 @@ export default function DemoMode({ onSelectCountry, isActive, onStop }: Props) {
             >
               <div className="flex items-baseline gap-3 mb-0.5">
                 <h2 className="font-display text-[18px] font-semibold text-white leading-none">{current.name}</h2>
-                <span className="font-data text-[10px] text-white/35">{current.code}</span>
+                <span className="font-data text-[10px] text-white/52">{current.code}</span>
               </div>
-              <p className="text-[11px] text-white/45">{current.headline}</p>
+              <p className="text-[11px] text-white/52">{current.headline}</p>
             </motion.div>
           )}
         </AnimatePresence>

@@ -58,7 +58,7 @@ function SectionHead({ title, aside, className = 'mb-3' }: { title: string; asid
     <div className={`section-head ${className}`}>
       <span className="font-data text-[10px] text-[#45E0C0]/60 leading-none">▍</span>
       <p className="microlabel">{title}</p>
-      {aside && <span className="font-data text-[8px] text-white/20 tracking-wide">{aside}</span>}
+      {aside && <span className="font-data text-[8px] text-white/48 tracking-wide">{aside}</span>}
     </div>
   )
 }
@@ -193,7 +193,7 @@ function TradePanel({ countryCode }: { countryCode: string }) {
       )}
 
       <div className="mt-3 pt-3 border-t border-white/[0.05]">
-        <p className="text-[9px] text-white/22 leading-relaxed">
+        <p className="text-[9px] text-white/50 leading-relaxed">
           <span className="font-data text-[#2AC7A8]/50">▸</span> Enable{' '}
           <span className="text-[#2AC7A8]/50">Trade Routes</span> in the layer panel to visualise bilateral flows on the
           globe. Routes are weighted by trade volume — thicker arcs indicate higher dependency.
@@ -266,7 +266,7 @@ function BriefSection({ countryCode, countryName, data }: {
         <span className="font-data text-[10px] uppercase tracking-[0.18em] text-[#45E0C0]/70 group-hover:text-[#45E0C0] transition-colors">
           Brief Me
         </span>
-        <span className="font-data text-[8px] uppercase tracking-[0.14em] text-white/20 ml-auto">Text Summary</span>
+        <span className="font-data text-[8px] uppercase tracking-[0.14em] text-white/48 ml-auto">Text Summary</span>
       </motion.button>
 
       <AnimatePresence>
@@ -297,12 +297,12 @@ function BriefSection({ countryCode, countryName, data }: {
                       />
                     ))}
                   </div>
-                  <span className="font-data text-[9px] uppercase tracking-[0.14em] text-white/35">Generating summary</span>
+                  <span className="font-data text-[9px] uppercase tracking-[0.14em] text-white/52">Generating summary</span>
                 </div>
               )}
 
               {error && (
-                <p className="text-[11px] text-white/35 py-1">
+                <p className="text-[11px] text-white/52 py-1">
                   Summary unavailable. Try the AI Anchor for a full audio briefing.
                 </p>
               )}
@@ -345,7 +345,7 @@ function BriefSection({ countryCode, countryName, data }: {
                         <div>
                           <p className="font-data text-[9px] uppercase tracking-[0.18em] text-[#FF5D5D]/50 mb-1">Risks</p>
                           {brief.risks.map((r, i) => (
-                            <p key={i} className="text-[9.5px] text-white/38 leading-snug flex items-start gap-1">
+                            <p key={i} className="text-[9.5px] text-white/55 leading-snug flex items-start gap-1">
                               <span className="text-[#FF5D5D]/45 flex-shrink-0">●</span>{r}
                             </p>
                           ))}
@@ -355,7 +355,7 @@ function BriefSection({ countryCode, countryName, data }: {
                         <div>
                           <p className="font-data text-[9px] uppercase tracking-[0.18em] text-[#3DDC97]/50 mb-1">Opportunities</p>
                           {brief.opportunities.map((o, i) => (
-                            <p key={i} className="text-[9.5px] text-white/38 leading-snug flex items-start gap-1">
+                            <p key={i} className="text-[9.5px] text-white/55 leading-snug flex items-start gap-1">
                               <span className="text-[#3DDC97]/45 flex-shrink-0">●</span>{o}
                             </p>
                           ))}
@@ -396,7 +396,7 @@ function StatCard({ label, value, suffix = '', prefix = '', color = '#45E0C0', d
     >
       <p className="microlabel mb-1.5">{label}</p>
       <p className="font-data text-lg font-semibold leading-none" style={{ color }}>{prefix}{display}{suffix}</p>
-      {source && <p className="font-data text-[8px] text-white/20 mt-1.5 uppercase tracking-wide">{source}</p>}
+      {source && <p className="font-data text-[8px] text-white/48 mt-1.5 uppercase tracking-wide">{source}</p>}
     </motion.div>
   )
 }
@@ -429,7 +429,7 @@ function BarCard({ label, value, max = 100, unit = '', delay = 0, color = '#2AC7
           style={{ background: color }}
         />
       </div>
-      {source && <p className="font-data text-[8px] text-white/20 mt-1.5 uppercase tracking-wide">{source}</p>}
+      {source && <p className="font-data text-[8px] text-white/48 mt-1.5 uppercase tracking-wide">{source}</p>}
     </motion.div>
   )
 }
@@ -485,15 +485,15 @@ function DataUnavailable({ name, countryCode, onRetry }: {
           <SectionHead title="Geographic Information" />
           <div className="space-y-2 text-[12px] text-white/50">
             <p className="font-data text-[11px] text-white/55">{info.geo}</p>
-            <p className="text-white/40 leading-relaxed">{info.note}</p>
-            {info.stations && <p className="font-data text-[10px] text-white/40">{info.stations}</p>}
+            <p className="text-white/50 leading-relaxed">{info.note}</p>
+            {info.stations && <p className="font-data text-[10px] text-white/50">{info.stations}</p>}
           </div>
         </div>
       )}
 
       <div className="card p-3.5" style={{ borderLeftColor: 'rgba(255,176,32,0.45)' }}>
         <p className="microlabel mb-2" style={{ color: 'rgba(255,176,32,0.55)' }}>Data Coverage Status</p>
-        <p className="text-[12px] text-white/35 leading-relaxed">
+        <p className="text-[12px] text-white/52 leading-relaxed">
           {info?.coverage ?? 'No indicators came back for this selection. That usually means the World Bank does not publish data for this territory, but it can also happen when the upstream feed is briefly unavailable.'}
         </p>
         {!info && (
@@ -570,13 +570,13 @@ export default function CountryView({ countryCode, countryName, showNews = false
         <p className="microlabel flex items-center gap-1.5 min-w-0">
           {metaParts.map((part, i) => (
             <span key={i} className="flex items-center gap-1.5 min-w-0">
-              {i > 0 && <span className="text-white/20">·</span>}
+              {i > 0 && <span className="text-white/48">·</span>}
               <span className="truncate">{part}</span>
             </span>
           ))}
           {timelineYear && (
             <span className="flex items-center gap-1.5">
-              <span className="text-white/20">·</span>
+              <span className="text-white/48">·</span>
               <span className="text-[#45E0C0]/60">{timelineYear}</span>
             </span>
           )}
@@ -601,8 +601,8 @@ export default function CountryView({ countryCode, countryName, showNews = false
           onClick={onCompare}
           className="w-full flex items-center gap-2 px-3.5 py-2 rounded border border-white/[0.08] hover:border-[#45E0C0]/22 hover:bg-[rgba(69,224,192,0.06)] transition-colors group"
         >
-          <span className="font-data text-[10px] text-white/30 group-hover:text-[#45E0C0]/60 leading-none transition-colors">▸</span>
-          <span className="font-data text-[10px] uppercase tracking-[0.18em] text-white/35 group-hover:text-white/60 transition-colors">
+          <span className="font-data text-[10px] text-white/48 group-hover:text-[#45E0C0]/60 leading-none transition-colors">▸</span>
+          <span className="font-data text-[10px] uppercase tracking-[0.18em] text-white/52 group-hover:text-white/60 transition-colors">
             Compare with another country
           </span>
         </motion.button>
@@ -684,7 +684,7 @@ export default function CountryView({ countryCode, countryName, showNews = false
                       background: `rgba(69,224,192,${0.2 + city.pulse_intensity * 0.8})`,
                     }}
                   />
-                  <span className="font-data text-[9px] text-white/25 w-6 text-right">
+                  <span className="font-data text-[9px] text-white/50 w-6 text-right">
                     {Math.round(city.pulse_intensity * 100)}
                   </span>
                 </div>

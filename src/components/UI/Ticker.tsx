@@ -33,10 +33,10 @@ function TickerEntry({ item, onSelect }: { item: TickerItem; onSelect: (item: Ti
           {up ? '+' : ''}{g.toFixed(1)}% {up ? '▲' : '▼'}
         </span>
       ) : (
-        <span className="font-data text-[10px] text-white/25">—</span>
+        <span className="font-data text-[10px] text-white/50">—</span>
       )}
       <span className="text-white/15 text-[9px]">·</span>
-      <span className="font-data text-[10px] text-white/35">
+      <span className="font-data text-[10px] text-white/52">
         CPI {item.inflation !== null ? `${item.inflation.toFixed(1)}%` : '—'}
       </span>
       <span className="text-white/10 text-[10px] pl-3 select-none">│</span>

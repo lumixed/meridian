@@ -24,7 +24,7 @@ export default function CityView({ cityId }: { cityId: string }) {
     </div>
   )
 
-  if (!city) return <p className="p-6 text-center text-white/30 text-sm">City intelligence unavailable.</p>
+  if (!city) return <p className="p-6 text-center text-white/48 text-sm">City intelligence unavailable.</p>
 
   const riskColor = city.risk_score < 30 ? '#3DDC97' : city.risk_score < 60 ? '#45E0C0' : '#FFB020'
   const pulse = Math.round(city.pulse_intensity * 100)
@@ -55,7 +55,7 @@ export default function CityView({ cityId }: { cityId: string }) {
         </div>
         <p className="font-data text-3xl font-semibold text-[#45E0C0] leading-none">
           {pulse}
-          <span className="font-data text-[11px] text-white/30 font-normal ml-1.5">/ 100</span>
+          <span className="font-data text-[11px] text-white/48 font-normal ml-1.5">/ 100</span>
         </p>
         <div className="h-[3px] bg-white/[0.07] overflow-hidden mt-3">
           <motion.div
@@ -120,7 +120,7 @@ export default function CityView({ cityId }: { cityId: string }) {
         <div className="section-head mb-3">
           <span className="font-data text-[10px] text-[#45E0C0]/60 leading-none">▍</span>
           <p className="microlabel">City Intelligence</p>
-          <span className="font-data text-[8px] text-white/20 tracking-wide">DERIVED FROM ESTIMATES</span>
+          <span className="font-data text-[8px] text-white/48 tracking-wide">DERIVED FROM ESTIMATES</span>
         </div>
         <div className="space-y-2 text-[12px] text-white/55">
           <div className="flex items-center justify-between">
@@ -142,7 +142,7 @@ export default function CityView({ cityId }: { cityId: string }) {
             </span>
           </div>
         </div>
-        <p className="text-[8.5px] text-white/18 mt-3 leading-relaxed">
+        <p className="text-[8.5px] text-white/48 mt-3 leading-relaxed">
           City-level metrics are estimates for contextual reference. For verified national data, view the country dashboard.
         </p>
       </motion.div>

@@ -27,7 +27,7 @@ export default function GlobeFallback({ reason, onRetry }: Props) {
           <p className="microlabel">Renderer Offline</p>
         </div>
         <p className="font-display text-[16px] text-white/80 leading-snug">{title}</p>
-        <p className="text-[12.5px] text-white/45 leading-relaxed mt-2">{body}</p>
+        <p className="text-[12.5px] text-white/52 leading-relaxed mt-2">{body}</p>
         {onRetry && (
           <button
             onClick={onRetry}

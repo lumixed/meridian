@@ -41,7 +41,7 @@ export default function TimelineSlider({ year, onChange }: Props) {
             key={m}
             onClick={() => onChange(m)}
             className={`font-data text-[9px] tabular-nums transition-colors ${
-              m === year ? 'text-[#45E0C0]/80' : 'text-white/20 hover:text-white/45'
+              m === year ? 'text-[#45E0C0]/80' : 'text-white/48 hover:text-white/52'
             }`}
           >
             {m}
@@ -49,7 +49,7 @@ export default function TimelineSlider({ year, onChange }: Props) {
         ))}
       </div>
 
-      <p className="font-data text-[8px] uppercase tracking-[0.14em] text-white/20 mt-2 text-center">
+      <p className="font-data text-[8px] uppercase tracking-[0.14em] text-white/48 mt-2 text-center">
         WORLD BANK SERIES · SELECT A COUNTRY TO RELOAD
       </p>
     </motion.div>

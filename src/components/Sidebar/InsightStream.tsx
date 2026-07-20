@@ -74,11 +74,11 @@ export default function InsightStream({ entityId, entityType, countryData, cityC
         <span className="font-data text-[10px] text-[#45E0C0]/60 leading-none">▍</span>
         <p className="microlabel">AI Intelligence</p>
         {streaming && (
-          <span className="font-data text-[8px] uppercase tracking-[0.14em] text-white/25">Analyzing</span>
+          <span className="font-data text-[8px] uppercase tracking-[0.14em] text-white/50">Analyzing</span>
         )}
       </div>
       <p className="text-[12.5px] text-white/65 leading-relaxed">
-        {text || <span className="text-white/20">Analyzing economic signals...</span>}
+        {text || <span className="text-white/48">Analyzing economic signals...</span>}
         {streaming && text && <span className="blink font-data text-[#45E0C0]/70 ml-0.5">▌</span>}
       </p>
     </motion.div>

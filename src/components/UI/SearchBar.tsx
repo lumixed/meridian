@@ -27,7 +27,7 @@ const TYPE_TAGS: Record<string, string> = {
 const TYPE_COLORS: Record<string, string> = {
   country: 'text-[#45E0C0]/70 border-[#45E0C0]/25',
   capital: 'text-[#FFB020]/70 border-[#FFB020]/25',
-  city: 'text-white/40 border-white/15',
+  city: 'text-white/50 border-white/15',
 }
 
 export default function SearchBar({ onSelect }: Props) {
@@ -111,7 +111,7 @@ export default function SearchBar({ onSelect }: Props) {
                 </span>
                 <div className="min-w-0">
                   <p className="text-[12.5px] text-white/80 truncate">{r.name}</p>
-                  <p className="font-data text-[9px] uppercase tracking-[0.12em] text-white/30 truncate">{r.subtitle}</p>
+                  <p className="font-data text-[9px] uppercase tracking-[0.12em] text-white/48 truncate">{r.subtitle}</p>
                 </div>
               </button>
             ))}

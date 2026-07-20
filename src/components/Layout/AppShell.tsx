@@ -132,7 +132,7 @@ export default function AppShell() {
             <span className="microlabel !text-[#45E0C0]/75">Select a country to compare</span>
             <button
               onClick={closeCompare}
-              className="text-white/30 hover:text-white/60 text-[12px] leading-none cursor-pointer"
+              className="text-white/48 hover:text-white/60 text-[12px] leading-none cursor-pointer"
             >
               ×
             </button>

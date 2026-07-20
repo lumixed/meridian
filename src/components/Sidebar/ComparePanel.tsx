@@ -170,7 +170,7 @@ export default function ComparePanel({ codeA, nameA, codeB, nameB }: Props) {
                     >
                       {verdict.aWins ? nameA : nameB}
                     </p>
-                    <p className="text-[11px] text-white/45 mt-0.5">
+                    <p className="text-[11px] text-white/52 mt-0.5">
                       Stronger composite signals — growth, risk, and innovation.
                     </p>
                   </div>
@@ -189,7 +189,7 @@ export default function ComparePanel({ codeA, nameA, codeB, nameB }: Props) {
             )}
 
             {(!A.data || !B.data) && (
-              <p className="text-center text-[12px] text-white/28 py-6">
+              <p className="text-center text-[12px] text-white/52 py-6">
                 Data unavailable for one or both countries.
               </p>
             )}

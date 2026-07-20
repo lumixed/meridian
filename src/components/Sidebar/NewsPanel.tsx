@@ -43,7 +43,7 @@ export default function NewsPanel({ countryCode }: Props) {
           <span className="font-data text-[10px] text-[#45E0C0]/60 leading-none">▍</span>
           <p className="microlabel">Economic News · Feed</p>
           {fetchedAt && (
-            <span className="font-data text-[8px] text-white/20">
+            <span className="font-data text-[8px] text-white/48">
               {new Date(fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
@@ -68,7 +68,7 @@ export default function NewsPanel({ countryCode }: Props) {
             key="error"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="px-4 py-5 text-[12px] text-white/22 text-center"
+            className="px-4 py-5 text-[12px] text-white/50 text-center"
           >
             {noRecent
               ? 'No recent economic developments available.'
@@ -98,10 +98,10 @@ export default function NewsPanel({ countryCode }: Props) {
                 </p>
                 <div className="flex items-center gap-2 mt-1.5">
                   <span className="font-data text-[9px] uppercase tracking-[0.08em] text-[#45E0C0]/60">{a.source}</span>
-                  <span className="font-data text-[9px] text-white/20">·</span>
-                  <span className="font-data text-[9px] text-white/28">{a.ageLabel}</span>
+                  <span className="font-data text-[9px] text-white/48">·</span>
+                  <span className="font-data text-[9px] text-white/52">{a.ageLabel}</span>
                 </div>
-                {a.summary && <p className="text-[10px] text-white/28 mt-1 line-clamp-1">{a.summary}</p>}
+                {a.summary && <p className="text-[10px] text-white/52 mt-1 line-clamp-1">{a.summary}</p>}
               </motion.a>
             ))}
           </motion.div>

@@ -31,14 +31,14 @@ export default function LoadingScreen() {
           {BOOT_LINES.map((line, i) => (
             <p
               key={line}
-              className="font-data text-[10px] text-white/45 opacity-0"
+              className="font-data text-[10px] text-white/52 opacity-0"
               style={{
                 animation: 'md-boot-line 0.01s steps(1, end) forwards',
                 animationDelay: `${0.35 + i * 0.5}s`,
               }}
             >
               <span className="text-[#45E0C0]/70">▸</span> {line}{' '}
-              <span className="text-white/20">…</span>{' '}
+              <span className="text-white/48">…</span>{' '}
               <span className="text-[#45E0C0]/80">OK</span>
             </p>
           ))}

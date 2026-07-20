@@ -259,7 +259,7 @@ export default function InvestmentReport({ countryCode, countryName, countryData
                 </span>
               )}
               {report && (
-                <span className="font-data text-[9px] text-white/30 tracking-wider hidden sm:inline">
+                <span className="font-data text-[9px] text-white/48 tracking-wider hidden sm:inline">
                   CONFIDENCE {report.confidenceScore}/10
                 </span>
               )}
@@ -280,7 +280,7 @@ export default function InvestmentReport({ countryCode, countryName, countryData
               {!loading && (
                 <button
                   onClick={() => generateReport(true)}
-                  className="font-data text-[9px] text-white/25 hover:text-white/50 transition-colors uppercase tracking-[0.14em]"
+                  className="font-data text-[9px] text-white/50 hover:text-white/50 transition-colors uppercase tracking-[0.14em]"
                 >
                   ↺ Regenerate
                 </button>
@@ -288,7 +288,7 @@ export default function InvestmentReport({ countryCode, countryName, countryData
               <button
                 onClick={closeModal}
                 aria-label="Close report"
-                className="w-7 h-7 rounded flex items-center justify-center font-data text-white/30 hover:text-[#45E0C0] border border-transparent hover:border-[#45E0C0]/30 transition-all text-sm leading-none"
+                className="w-7 h-7 rounded flex items-center justify-center font-data text-white/48 hover:text-[#45E0C0] border border-transparent hover:border-[#45E0C0]/30 transition-all text-sm leading-none"
               >
                 ✕
               </button>
@@ -301,7 +301,7 @@ export default function InvestmentReport({ countryCode, countryName, countryData
                 {flag && <span className="text-3xl">{flag}</span>}
                 <div>
                   <h1 className="font-display text-[26px] font-bold text-white leading-none tracking-wide">{countryName}</h1>
-                  <p className="font-data text-[9px] text-white/30 mt-1.5 tracking-[0.1em] uppercase">
+                  <p className="font-data text-[9px] text-white/48 mt-1.5 tracking-[0.1em] uppercase">
                     Investment Research Report · World Bank / IMF {report?.dataYear ?? ''} ·
                     Generated {report ? formatDate(report.generatedAt) : '…'}
                   </p>
@@ -388,7 +388,7 @@ export default function InvestmentReport({ countryCode, countryName, countryData
                           >
                             {s.signal}
                           </span>
-                          <p className="text-[11.5px] text-white/45 leading-snug flex-1 min-w-[180px]">{s.outlook}</p>
+                          <p className="text-[11.5px] text-white/52 leading-snug flex-1 min-w-[180px]">{s.outlook}</p>
                         </div>
                       ))}
                     </div>
@@ -419,7 +419,7 @@ export default function InvestmentReport({ countryCode, countryName, countryData
 
                   <div className="pt-6 border-t border-white/[0.06]">
                     <p className="microlabel mb-2">Data Provenance</p>
-                    <p className="text-[10.5px] text-white/28 leading-relaxed">
+                    <p className="text-[10.5px] text-white/52 leading-relaxed">
                       All macroeconomic indicators (GDP, GDP Growth, Inflation, Unemployment, Trade) are sourced from
                       World Bank Open Data and IMF World Economic Outlook ({report.dataYear}).
                       News intelligence sourced from Reuters, Bloomberg, BBC Business, and local economic publications.
@@ -453,7 +453,7 @@ export default function InvestmentReport({ countryCode, countryName, countryData
           </p>
           <p className="microlabel mt-0.5 normal-case tracking-[0.06em]">Institutional research note · AI + real data</p>
         </div>
-        <span className="font-data text-[9px] text-white/25 flex-shrink-0 border border-white/10 rounded px-1.5 py-0.5">PDF</span>
+        <span className="font-data text-[9px] text-white/50 flex-shrink-0 border border-white/10 rounded px-1.5 py-0.5">PDF</span>
       </motion.button>
 
       {typeof document !== 'undefined' && createPortal(modal, document.body)}

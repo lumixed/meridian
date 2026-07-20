@@ -81,9 +81,9 @@ export default function Sparkline({ values, years, color, height = 36, zeroLine 
         />
       </svg>
       <div className="flex items-center justify-between mt-1">
-        <span className="font-data text-[8px] text-white/25">{years[0] ?? ''}</span>
+        <span className="font-data text-[8px] text-white/50">{years[0] ?? ''}</span>
         <span className="font-data text-[8px] font-semibold" style={{ color }}>{latestLabel}</span>
-        <span className="font-data text-[8px] text-white/25">{years[years.length - 1] ?? ''}</span>
+        <span className="font-data text-[8px] text-white/50">{years[years.length - 1] ?? ''}</span>
       </div>
     </div>
   )

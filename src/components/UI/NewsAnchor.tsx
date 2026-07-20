@@ -375,7 +375,7 @@ export default function NewsAnchor({ selectedEntity }: Props) {
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-2 flex-shrink-0">
                 {isPlaying && <span className="block w-full h-full rounded-full bg-red-500 animate-ping opacity-70" />}
               </span>
-              <span className="font-data text-[9px] text-white/35 uppercase tracking-[0.2em] flex-1">
+              <span className="font-data text-[9px] text-white/52 uppercase tracking-[0.2em] flex-1">
                 MERIDIAN · LIVE BRIEFING
               </span>
               <span className="text-[13px] mr-1.5">{flag}</span>
@@ -384,7 +384,7 @@ export default function NewsAnchor({ selectedEntity }: Props) {
               </span>
               <button
                 onClick={() => { stopPlayback(); setIsOpen(false) }}
-                className="w-5 h-5 rounded-full flex items-center justify-center text-white/30 hover:text-white/60 hover:bg-white/10 transition-colors text-sm leading-none flex-shrink-0"
+                className="w-5 h-5 rounded-full flex items-center justify-center text-white/48 hover:text-white/60 hover:bg-white/10 transition-colors text-sm leading-none flex-shrink-0"
               >
                 ×
               </button>
@@ -400,7 +400,7 @@ export default function NewsAnchor({ selectedEntity }: Props) {
                   <div className="flex flex-col justify-center h-full py-2">
                     <div className="flex items-center gap-1.5 mb-3">
                       <Dots />
-                      <span className="text-[10px] text-white/35 ml-1">{phaseLabel}</span>
+                      <span className="text-[10px] text-white/52 ml-1">{phaseLabel}</span>
                     </div>
                     <div className="h-[2px] rounded-full bg-white/[0.05] overflow-hidden">
                       <div
@@ -440,13 +440,13 @@ export default function NewsAnchor({ selectedEntity }: Props) {
                       <button
                         onClick={triggerBriefing}
                         aria-label="Regenerate briefing"
-                        className="ml-auto text-[9px] text-white/22 hover:text-white/45 transition-colors uppercase tracking-wide"
+                        className="ml-auto text-[9px] text-white/50 hover:text-white/52 transition-colors uppercase tracking-wide"
                       >
                         ↺
                       </button>
                     </div>
 
-                    <p className="text-[8.5px] text-white/18 mt-1.5">
+                    <p className="text-[8.5px] text-white/48 mt-1.5">
                       {briefing.generatedBy === 'deterministic'
                         ? 'Data-derived briefing'
                         : `Claude · ${briefing.generatedBy}`} · system voice
@@ -465,7 +465,7 @@ export default function NewsAnchor({ selectedEntity }: Props) {
                   className="px-3.5 pb-3"
                   style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
                 >
-                  <p className="text-[9px] text-white/25 uppercase tracking-wider mt-2.5 mb-1">Transcript</p>
+                  <p className="text-[9px] text-white/50 uppercase tracking-wider mt-2.5 mb-1">Transcript</p>
                   <p className="text-[11px] text-white/52 leading-relaxed line-clamp-3">{briefing.script}</p>
                 </motion.div>
               )}
@@ -482,7 +482,7 @@ export default function NewsAnchor({ selectedEntity }: Props) {
                 >
                   {briefing.keyTakeaways.length > 0 && (
                     <div>
-                      <p className="text-[9px] text-white/25 uppercase tracking-wider mb-1.5">Key Takeaways</p>
+                      <p className="text-[9px] text-white/50 uppercase tracking-wider mb-1.5">Key Takeaways</p>
                       <div className="space-y-1">
                         {briefing.keyTakeaways.map((t, i) => (
                           <div key={i} className="flex items-start gap-1.5">
@@ -510,7 +510,7 @@ export default function NewsAnchor({ selectedEntity }: Props) {
                         <div>
                           <p className="text-[9px] text-[#FF5D5D]/50 uppercase tracking-wider mb-1">Risks</p>
                           {briefing.risks.map((r, i) => (
-                            <p key={i} className="text-[9.5px] text-white/40 leading-snug flex items-start gap-1">
+                            <p key={i} className="text-[9.5px] text-white/50 leading-snug flex items-start gap-1">
                               <span className="text-[#FF5D5D]/50">●</span>{r}
                             </p>
                           ))}
@@ -520,7 +520,7 @@ export default function NewsAnchor({ selectedEntity }: Props) {
                         <div>
                           <p className="text-[9px] text-[#3DDC97]/50 uppercase tracking-wider mb-1">Opportunities</p>
                           {briefing.opportunities.map((o, i) => (
-                            <p key={i} className="text-[9.5px] text-white/40 leading-snug flex items-start gap-1">
+                            <p key={i} className="text-[9.5px] text-white/50 leading-snug flex items-start gap-1">
                               <span className="text-[#3DDC97]/50">●</span>{o}
                             </p>
                           ))}
