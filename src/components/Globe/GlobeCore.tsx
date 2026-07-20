@@ -369,9 +369,9 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
       width={dims.w}
       height={dims.h}
 
-      globeImageUrl="/globe/earth-night.jpg"
-      bumpImageUrl="/globe/earth-topology.png"
-      backgroundImageUrl="/globe/night-sky.png"
+      globeImageUrl="/globe/earth-night.webp"
+      bumpImageUrl="/globe/earth-topology.webp"
+      backgroundImageUrl="/globe/night-sky.webp"
       atmosphereColor="#2AC7A8"
       atmosphereAltitude={0.22}
 
