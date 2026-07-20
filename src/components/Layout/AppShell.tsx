@@ -1,12 +1,11 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import dynamic from 'next/dynamic'
 import { AnimatePresence, motion } from 'framer-motion'
+import GlobeStage from '@/components/Globe/GlobeStage'
 import SidebarPanel from '@/components/Sidebar/SidebarPanel'
 import DemoMode from '@/components/UI/DemoMode'
 import LayerControl from '@/components/UI/LayerControl'
-import LoadingScreen from '@/components/UI/LoadingScreen'
 import NewsAnchor from '@/components/UI/NewsAnchor'
 import Ticker, { type TickerItem } from '@/components/UI/Ticker'
 import TimelineSlider from '@/components/UI/TimelineSlider'
@@ -14,11 +13,6 @@ import TopBar from '@/components/UI/TopBar'
 import { useUrlState, type RestoredUrlState } from '@/hooks/useUrlState'
 import type { SelectedEntity } from '@/types/globe'
 import { DEFAULT_LAYERS, type LayerState } from '@/types/layers'
-
-const GlobeContainer = dynamic(() => import('@/components/Globe/GlobeContainer'), {
-  ssr: false,
-  loading: () => <LoadingScreen />,
-})
 
 export default function AppShell() {
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
@@ -146,7 +140,7 @@ export default function AppShell() {
         )}
       </AnimatePresence>
 
-      <GlobeContainer
+      <GlobeStage
         onEntitySelect={handleEntitySelect}
         onLoaded={handleLoaded}
         flyTo={flyTo}
