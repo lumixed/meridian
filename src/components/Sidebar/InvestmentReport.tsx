@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useDialog } from '@/hooks/useDialog'
 import type { CountryData } from '@/types/country'
 import type { InvestmentReport as Report, Recommendation, ReportRequest, SectorOutlook } from '@/types/report'
 
@@ -224,11 +225,17 @@ export default function InvestmentReport({ countryCode, countryName, countryData
   }, [countryCode, countryName, countryData, report])
 
   const rec = report ? REC_STYLES[report.overallRecommendation] : null
+  const closeModal = useCallback(() => setIsOpen(false), [])
+  const dialogRef = useDialog<HTMLDivElement>(isOpen, closeModal)
 
   const modal = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${countryName} investment research report`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -279,7 +286,7 @@ export default function InvestmentReport({ countryCode, countryName, countryData
                 </button>
               )}
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={closeModal}
                 aria-label="Close report"
                 className="w-7 h-7 rounded flex items-center justify-center font-data text-white/30 hover:text-[#45E0C0] border border-transparent hover:border-[#45E0C0]/30 transition-all text-sm leading-none"
               >
