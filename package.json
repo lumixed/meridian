@@ -8,7 +8,8 @@
     "start": "next start -p 5320",
     "lint": "next lint",
     "test": "vitest run",
-    "snapshot": "node scripts/build-snapshot.mjs"
+    "snapshot": "node scripts/build-snapshot.mjs",
+    "trim-geo": "node scripts/trim-geojson.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
