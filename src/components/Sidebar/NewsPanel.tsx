@@ -37,7 +37,7 @@ export default function NewsPanel({ countryCode }: Props) {
   }, [countryCode])
 
   return (
-    <div className="card card--flat overflow-hidden">
+    <div className="card card--flat overflow-hidden" aria-live="polite" aria-busy={loading}>
       <div className="px-3.5 pt-3.5 pb-3 border-b border-white/[0.04]">
         <div className="section-head">
           <span className="font-data text-[10px] text-[#45E0C0]/60 leading-none">▍</span>
