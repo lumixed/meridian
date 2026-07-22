@@ -8,6 +8,7 @@ import type { LayerState } from '@/types/layers'
 interface Props {
   layers: LayerState
   onToggle: (layer: keyof LayerState) => void
+  legendOffset?: number
 }
 
 const LAYERS: { key: keyof LayerState; label: string; desc: string }[] = [
@@ -64,7 +65,7 @@ const ICONS: Record<keyof LayerState, ReactNode> = {
   ),
 }
 
-export default function LayerControl({ layers, onToggle }: Props) {
+export default function LayerControl({ layers, onToggle, legendOffset = 0 }: Props) {
   const activeCount = (Object.keys(layers) as (keyof LayerState)[]).filter(k => layers[k]).length
 
   return (
@@ -105,7 +106,7 @@ export default function LayerControl({ layers, onToggle }: Props) {
         <span className="font-data text-[9px] text-[#45E0C0] tabular-nums mt-1.5">{activeCount}</span>
       </motion.div>
 
-      <Legend layers={layers} />
+      <Legend layers={layers} offsetRight={legendOffset} />
     </>
   )
 }

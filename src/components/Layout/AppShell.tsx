@@ -125,6 +125,8 @@ export default function AppShell() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [isComparing, compareEntity, selectedEntity, paletteOpen, closeCompare, closeSidebar])
 
+  const sidebarWidth = !selectedEntity ? 0 : compareEntity ? 680 : 400
+
   return (
     <div className="relative w-screen h-screen bg-[#04070c] overflow-hidden">
       <AnimatePresence>
@@ -174,7 +176,7 @@ export default function AppShell() {
           />
           <Ticker onSelect={handleTickerSelect} />
 
-          <LayerControl layers={layers} onToggle={toggleLayer} />
+          <LayerControl layers={layers} onToggle={toggleLayer} legendOffset={sidebarWidth} />
 
           <AnimatePresence>
             {layers.timeline && <TimelineSlider year={timelineYear} onChange={setTimelineYear} />}

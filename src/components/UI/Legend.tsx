@@ -29,11 +29,14 @@ function TierRows({ tiers }: { tiers: { color: string; label: string }[] }) {
   )
 }
 
-export default function Legend({ layers }: { layers: LayerState }) {
+export default function Legend({ layers, offsetRight = 0 }: { layers: LayerState; offsetRight?: number }) {
   if (!layers.heatmap && !layers.investment) return null
 
   return (
-    <div className="hidden sm:block fixed right-3 bottom-12 z-30 glass border border-white/[0.08] rounded p-3 w-[172px] space-y-3">
+    <div
+      style={{ right: offsetRight + 12 }}
+      className="hidden sm:block fixed bottom-12 z-30 glass border border-white/[0.08] rounded p-3 w-[172px] space-y-3 transition-[right] duration-300"
+    >
       {layers.heatmap && (
         <div>
           <p className="microlabel mb-1.5">GDP/CAPITA PERCENTILE</p>
