@@ -1,0 +1,40 @@
+name: Refresh snapshot
+
+on:
+  schedule:
+    - cron: '0 3 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Rebuild indicator snapshot
+        run: npm run snapshot
+
+      - name: Open a pull request when the data moved
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/refresh-snapshot
+          commit-message: refresh indicator snapshot
+          title: Refresh indicator snapshot
+          body: |
+            Automated monthly rebuild of `src/data/indicators-snapshot.json`
+            from the World Bank bulk indicator API.
+
+            This is the offline fallback used when a live indicator lookup fails.
+          add-paths: src/data/indicators-snapshot.json
+          delete-branch: true
