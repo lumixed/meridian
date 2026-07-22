@@ -1,89 +1,126 @@
 @import "tailwindcss";
 
-:root {
-  --background: #04070c;
-  --foreground: #ffffff;
-  --accent: #45e0c0;
-  --accent-deep: #2ac7a8;
-  --accent2: #8fb6ff;
-  --pos: #3ddc97;
-  --warn: #ffb020;
-  --danger: #ff5d5d;
-  --hairline: rgba(255, 255, 255, 0.08);
+@layer base {
+  :root {
+    --background: #04070c;
+    --foreground: #ffffff;
+    --accent: #45e0c0;
+    --accent-deep: #2ac7a8;
+    --accent2: #8fb6ff;
+    --pos: #3ddc97;
+    --warn: #ffb020;
+    --danger: #ff5d5d;
+    --hairline: rgba(255, 255, 255, 0.08);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    overflow: hidden;
+    font-family: var(--font-inter), system-ui, sans-serif;
+  }
+
+  ::selection {
+    background: rgba(69, 224, 192, 0.25);
+  }
+
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(69, 224, 192, 0.25);
+    border-radius: 2px;
+  }
+
+  @media (max-width: 639px) {
+    html,
+    body {
+      overflow-x: hidden;
+    }
+  }
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer components {
+  .glass {
+    background: rgba(5, 10, 15, 0.85);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  }
 
-html,
-body {
-  background: var(--background);
-  color: var(--foreground);
-  overflow: hidden;
-  font-family: var(--font-inter), system-ui, sans-serif;
-}
+  .font-display {
+    font-family: var(--font-display), var(--font-inter), sans-serif;
+  }
 
-::selection {
-  background: rgba(69, 224, 192, 0.25);
-}
+  .font-data {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+    font-variant-numeric: tabular-nums;
+  }
 
-::-webkit-scrollbar {
-  width: 3px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.03);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(69, 224, 192, 0.25);
-  border-radius: 2px;
-}
+  .card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--hairline);
+    border-left: 2px solid rgba(69, 224, 192, 0.35);
+    border-radius: 4px;
+  }
+  .card--flat {
+    border-left: 1px solid var(--hairline);
+  }
 
-.glass {
-  background: rgba(5, 10, 15, 0.85);
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
-}
+  .microlabel {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+  }
 
-.font-display {
-  font-family: var(--font-display), var(--font-inter), sans-serif;
-}
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-head::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--hairline);
+  }
 
-.font-data {
-  font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
-  font-variant-numeric: tabular-nums;
-}
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: md-marquee 60s linear infinite;
+  }
+  .ticker-track:hover {
+    animation-play-state: paused;
+  }
 
-.card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--hairline);
-  border-left: 2px solid rgba(69, 224, 192, 0.35);
-  border-radius: 4px;
-}
-.card--flat {
-  border-left: 1px solid var(--hairline);
-}
+  .blink {
+    animation: md-blink 1s step-end infinite;
+  }
 
-.microlabel {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-}
+  @media (max-width: 639px) {
+    .ticker-track {
+      animation-duration: 45s;
+    }
+  }
 
-.section-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.section-head::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--hairline);
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track,
+    .blink {
+      animation: none;
+    }
+  }
 }
 
 @keyframes md-ring {
@@ -105,14 +142,6 @@ body {
     transform: translateX(-50%);
   }
 }
-.ticker-track {
-  display: flex;
-  width: max-content;
-  animation: md-marquee 60s linear infinite;
-}
-.ticker-track:hover {
-  animation-play-state: paused;
-}
 
 @keyframes md-wave {
   0% {
@@ -129,26 +158,5 @@ body {
   }
   50%, 100% {
     opacity: 0;
-  }
-}
-.blink {
-  animation: md-blink 1s step-end infinite;
-}
-
-@media (max-width: 639px) {
-  html,
-  body {
-    overflow-x: hidden;
-  }
-
-  .ticker-track {
-    animation-duration: 45s;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track,
-  .blink {
-    animation: none;
   }
 }
