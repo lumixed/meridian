@@ -2,6 +2,8 @@ import snapshot from '@/data/indicators-snapshot.json'
 
 const REVALIDATE_SECONDS = 86400
 const MAX_ATTEMPTS = 3
+const ATTEMPT_TIMEOUT_MS = 8000
+const DEADLINE_MS = 30_000
 const BASE = 'https://api.worldbank.org/v2'
 
 const yearCache = new Map<string, string>()
@@ -11,13 +13,24 @@ function wait(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+function withDeadline<T>(work: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return new Promise<T>(resolve => {
+    const timer = setTimeout(() => resolve(fallback), ms)
+    const settle = (value: T) => {
+      clearTimeout(timer)
+      resolve(value)
+    }
+    work.then(settle, () => settle(fallback))
+  })
+}
+
 async function requestIndicator(key: string, url: string): Promise<number | null> {
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     if (attempt > 0) await wait(250 * attempt)
 
     try {
       const res = await fetch(url, {
-        signal: AbortSignal.timeout(8000),
+        signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
         next: { revalidate: REVALIDATE_SECONDS },
       })
       if (!res.ok) continue
@@ -53,8 +66,7 @@ async function fetchIndicator(countryCode: string, indicator: string, year?: num
     ? `${BASE}/country/${countryCode}/indicator/${indicator}?format=json&date=${year}&per_page=1`
     : `${BASE}/country/${countryCode}/indicator/${indicator}?format=json&mrv=5&per_page=5`
 
-  const request = requestIndicator(key, url)
-    .catch(() => null)
+  const request = withDeadline(requestIndicator(key, url), DEADLINE_MS, null)
     .finally(() => inFlight.delete(key))
 
   inFlight.set(key, request)

@@ -75,6 +75,20 @@ describe('getWorldBankData', () => {
     expect(data.population_m).toBeNull()
   })
 
+  it('gives up on a hung request instead of pinning the key forever', async () => {
+    vi.useFakeTimers()
+    vi.mocked(fetch).mockImplementation(() => new Promise(() => {}))
+
+    const pending = getWorldBankData('BR')
+    await vi.advanceTimersByTimeAsync(31_000)
+    const data = await pending
+
+    expect(data.source).toBe('snapshot')
+    expect(data.gdp_billion).toBe(snapshot.countries.BR.gdp_billion)
+
+    vi.useRealTimers()
+  })
+
   it('retries a failing request before giving up', async () => {
     const calls = new Map<string, number>()
     vi.mocked(fetch).mockImplementation(async input => {
