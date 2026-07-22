@@ -9,7 +9,8 @@
     "lint": "next lint",
     "test": "vitest run",
     "snapshot": "node scripts/build-snapshot.mjs",
-    "trim-geo": "node scripts/trim-geojson.mjs"
+    "trim-geo": "node scripts/trim-geojson.mjs",
+    "capture": "node scripts/capture-demo.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
@@ -33,6 +34,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "jsdom": "^30.0.1",
+    "puppeteer-core": "^25.5.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10"
