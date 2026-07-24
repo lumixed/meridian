@@ -352,4 +352,4 @@ hackathon project, rebuilt from scratch on a leaner stack.
 
 ## License
 
-MIT
+[MIT](LICENSE) — see the file for third-party data and asset notices.
