@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" width="1000" height="660" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="rgba(69,224,192,0.55)"/>
+    </marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="rgba(255,176,32,0.6)"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="660" fill="#04070c"/>
+
+  <text x="40" y="46" fill="#ffffff" font-size="17" font-weight="700" letter-spacing="5">MERIDIAN</text>
+  <rect x="180" y="35" width="9" height="9" fill="#45E0C0" transform="rotate(45 184.5 39.5)"/>
+  <text x="208" y="46" fill="rgba(255,255,255,0.45)" font-size="10.5" letter-spacing="2.4">REQUEST FLOW</text>
+  <line x1="40" y1="62" x2="960" y2="62" stroke="rgba(255,255,255,0.08)"/>
+
+  <g>
+    <rect x="40" y="92" width="240" height="176" rx="5" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="40" y="92" width="2.5" height="176" fill="#45E0C0"/>
+    <text x="60" y="118" fill="rgba(255,255,255,0.45)" font-size="9.5" letter-spacing="2.2">BROWSER</text>
+    <text x="60" y="146" fill="rgba(255,255,255,0.88)" font-size="12.5">GlobeStage</text>
+    <text x="60" y="164" fill="rgba(255,255,255,0.4)" font-size="10">WebGL guard + boundary</text>
+    <text x="60" y="192" fill="rgba(255,255,255,0.88)" font-size="12.5">GlobeCore</text>
+    <text x="60" y="210" fill="rgba(255,255,255,0.4)" font-size="10">react-globe.gl · three.js</text>
+    <text x="60" y="238" fill="rgba(255,255,255,0.88)" font-size="12.5">Sidebar · Palette · Chrome</text>
+    <text x="60" y="256" fill="rgba(255,255,255,0.4)" font-size="10">state mirrored into the URL</text>
+  </g>
+
+  <g>
+    <rect x="380" y="92" width="240" height="176" rx="5" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="380" y="92" width="2.5" height="176" fill="#45E0C0"/>
+    <text x="400" y="118" fill="rgba(255,255,255,0.45)" font-size="9.5" letter-spacing="2.2">ROUTE HANDLERS</text>
+    <text x="400" y="145" fill="rgba(255,255,255,0.8)" font-size="11">country · history · trade</text>
+    <text x="400" y="167" fill="rgba(255,255,255,0.8)" font-size="11">heatmap · ticker · search</text>
+    <text x="400" y="189" fill="rgba(255,255,255,0.8)" font-size="11">cities · city</text>
+    <text x="400" y="217" fill="#FFB020" font-size="11">insight · anchor · report</text>
+    <text x="400" y="235" fill="rgba(255,176,32,0.65)" font-size="9.5">rate limited per IP</text>
+    <text x="400" y="256" fill="rgba(255,255,255,0.35)" font-size="9.5">next data cache · revalidate 24h</text>
+  </g>
+
+  <g>
+    <rect x="720" y="92" width="240" height="80" rx="5" fill="rgba(255,255,255,0.02)" stroke="rgba(69,224,192,0.22)"/>
+    <rect x="720" y="92" width="2.5" height="80" fill="#45E0C0"/>
+    <text x="740" y="118" fill="rgba(255,255,255,0.45)" font-size="9.5" letter-spacing="2.2">WORLD BANK API</text>
+    <text x="740" y="142" fill="rgba(255,255,255,0.8)" font-size="11">free · keyless · flaky</text>
+    <text x="740" y="160" fill="rgba(255,255,255,0.35)" font-size="9.5">3 attempts · 8s each · 30s cap</text>
+  </g>
+
+  <g>
+    <rect x="720" y="188" width="240" height="80" rx="5" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+    <rect x="720" y="188" width="2.5" height="80" fill="rgba(143,182,255,0.8)"/>
+    <text x="740" y="214" fill="rgba(255,255,255,0.45)" font-size="9.5" letter-spacing="2.2">RSS + CLAUDE</text>
+    <text x="740" y="238" fill="rgba(255,255,255,0.8)" font-size="11">Google News · BBC · Reuters</text>
+    <text x="740" y="256" fill="rgba(255,255,255,0.35)" font-size="9.5">Claude structured outputs</text>
+  </g>
+
+  <line x1="284" y1="180" x2="374" y2="180" stroke="rgba(69,224,192,0.45)" stroke-width="1.3" marker-end="url(#a)"/>
+  <text x="292" y="172" fill="rgba(255,255,255,0.35)" font-size="9">fetch</text>
+  <line x1="624" y1="140" x2="714" y2="132" stroke="rgba(69,224,192,0.45)" stroke-width="1.3" marker-end="url(#a)"/>
+  <line x1="624" y1="220" x2="714" y2="228" stroke="rgba(143,182,255,0.4)" stroke-width="1.3" marker-end="url(#a)"/>
+
+  <text x="40" y="330" fill="rgba(255,255,255,0.45)" font-size="9.5" letter-spacing="2.2">INDICATOR RESOLUTION</text>
+  <line x1="248" y1="326" x2="960" y2="326" stroke="rgba(255,255,255,0.08)"/>
+
+  <g>
+    <rect x="40" y="352" width="176" height="76" rx="5" fill="rgba(69,224,192,0.05)" stroke="rgba(69,224,192,0.28)"/>
+    <text x="60" y="380" fill="#45E0C0" font-size="11.5">1 · Live request</text>
+    <text x="60" y="402" fill="rgba(255,255,255,0.42)" font-size="9.5">per indicator, in parallel</text>
+    <text x="60" y="418" fill="rgba(255,255,255,0.42)" font-size="9.5">deduped while in flight</text>
+  </g>
+
+  <g>
+    <rect x="256" y="352" width="176" height="76" rx="5" fill="rgba(69,224,192,0.05)" stroke="rgba(69,224,192,0.28)"/>
+    <text x="276" y="380" fill="#45E0C0" font-size="11.5">2 · Retry</text>
+    <text x="276" y="402" fill="rgba(255,255,255,0.42)" font-size="9.5">3 attempts, backing off</text>
+    <text x="276" y="418" fill="rgba(255,255,255,0.42)" font-size="9.5">failures are never cached</text>
+  </g>
+
+  <g>
+    <rect x="472" y="352" width="176" height="76" rx="5" fill="rgba(255,176,32,0.05)" stroke="rgba(255,176,32,0.32)"/>
+    <text x="492" y="380" fill="#FFB020" font-size="11.5">3 · Snapshot</text>
+    <text x="492" y="402" fill="rgba(255,255,255,0.42)" font-size="9.5">bundled 264-country JSON</text>
+    <text x="492" y="418" fill="rgba(255,255,255,0.42)" font-size="9.5">fills only the gaps</text>
+  </g>
+
+  <g>
+    <rect x="688" y="352" width="272" height="76" rx="5" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+    <text x="708" y="380" fill="rgba(255,255,255,0.85)" font-size="11.5">4 · Labelled response</text>
+    <text x="708" y="402" fill="#3DDC97" font-size="9.5">Verified</text>
+    <text x="768" y="402" fill="rgba(255,255,255,0.25)" font-size="9.5">/</text>
+    <text x="782" y="402" fill="#FFB020" font-size="9.5">Partly cached</text>
+    <text x="872" y="402" fill="rgba(255,255,255,0.25)" font-size="9.5">/</text>
+    <text x="886" y="402" fill="#FFB020" font-size="9.5">Snapshot</text>
+    <text x="708" y="418" fill="rgba(255,255,255,0.42)" font-size="9.5">provenance shown in the sidebar</text>
+  </g>
+
+  <line x1="220" y1="390" x2="250" y2="390" stroke="rgba(69,224,192,0.5)" stroke-width="1.3" marker-end="url(#a)"/>
+  <line x1="436" y1="390" x2="466" y2="390" stroke="rgba(255,176,32,0.55)" stroke-width="1.3" marker-end="url(#b)"/>
+  <line x1="652" y1="390" x2="682" y2="390" stroke="rgba(69,224,192,0.5)" stroke-width="1.3" marker-end="url(#a)"/>
+
+  <text x="40" y="490" fill="rgba(255,255,255,0.45)" font-size="9.5" letter-spacing="2.2">BUNDLED DATA · NO DATABASE</text>
+  <line x1="290" y1="486" x2="960" y2="486" stroke="rgba(255,255,255,0.08)"/>
+
+  <g font-size="10.5">
+    <rect x="40" y="512" width="216" height="60" rx="4" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+    <text x="58" y="536" fill="rgba(255,255,255,0.8)">indicators-snapshot.json</text>
+    <text x="58" y="554" fill="rgba(255,255,255,0.38)" font-size="9.5">264 countries · refreshed monthly</text>
+
+    <rect x="272" y="512" width="216" height="60" rx="4" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+    <text x="290" y="536" fill="rgba(255,255,255,0.8)">seed-cities.json</text>
+    <text x="290" y="554" fill="rgba(255,255,255,0.38)" font-size="9.5">29 hubs · pulse derived at import</text>
+
+    <rect x="504" y="512" width="216" height="60" rx="4" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+    <text x="522" y="536" fill="rgba(255,255,255,0.8)">countries-list.ts</text>
+    <text x="522" y="554" fill="rgba(255,255,255,0.38)" font-size="9.5">171 countries for instant search</text>
+
+    <rect x="736" y="512" width="224" height="60" rx="4" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+    <text x="754" y="536" fill="rgba(255,255,255,0.8)">countries.geojson</text>
+    <text x="754" y="554" fill="rgba(255,255,255,0.38)" font-size="9.5">177 borders · 172KB trimmed</text>
+  </g>
+
+  <line x1="40" y1="606" x2="960" y2="606" stroke="rgba(255,255,255,0.08)"/>
+  <text x="40" y="630" fill="rgba(255,255,255,0.3)" font-size="9.5">Next.js App Router · every AI surface degrades to a deterministic report when no API key is present</text>
+</svg>
