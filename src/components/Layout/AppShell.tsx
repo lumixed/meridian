@@ -177,7 +177,12 @@ export default function AppShell() {
           />
           <Ticker onSelect={handleTickerSelect} />
 
-          <LayerControl layers={layers} onToggle={toggleLayer} legendOffset={sidebarWidth} />
+          <LayerControl
+            layers={layers}
+            onToggle={toggleLayer}
+            legendOffset={sidebarWidth}
+            legendRaised={layers.timeline}
+          />
 
           <AnimatePresence>
             {layers.timeline && (

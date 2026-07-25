@@ -29,13 +29,19 @@ function TierRows({ tiers }: { tiers: { color: string; label: string }[] }) {
   )
 }
 
-export default function Legend({ layers, offsetRight = 0 }: { layers: LayerState; offsetRight?: number }) {
+interface LegendProps {
+  layers: LayerState
+  offsetRight?: number
+  offsetBottom?: number
+}
+
+export default function Legend({ layers, offsetRight = 0, offsetBottom = 0 }: LegendProps) {
   if (!layers.heatmap && !layers.investment) return null
 
   return (
     <div
-      style={{ right: offsetRight + 12 }}
-      className="hidden sm:block fixed bottom-12 z-30 glass border border-white/[0.08] rounded p-3 w-[172px] space-y-3 transition-[right] duration-300"
+      style={{ right: offsetRight + 12, bottom: offsetBottom + 48 }}
+      className="hidden sm:block fixed z-30 glass border border-white/[0.08] rounded p-3 w-[172px] space-y-3 transition-all duration-300"
     >
       {layers.heatmap && (
         <div>
