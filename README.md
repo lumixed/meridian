@@ -12,7 +12,7 @@ in one interactive surface. No database. No cloud account. One optional API key.
 ![React](https://img.shields.io/badge/React-19-087ea4?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4-06b6d4?style=flat-square&logo=tailwindcss)
-![Tests](https://img.shields.io/badge/tests-78%20passing-3DDC97?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-86%20passing-3DDC97?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-45E0C0?style=flat-square)
 
 </div>
@@ -62,8 +62,9 @@ configured.
 
 ![Meridian demo](docs/demo.gif)
 
-*Opening the command palette, jumping to Brazil, then switching on the GDP-per-capita heatmap and
-trade-route layers. Every figure on screen is live World Bank data.*
+*Opening the command palette, jumping to Brazil, switching on the GDP-per-capita heatmap and
+trade routes, then scrubbing the timeline from 2015 to 2025 and watching the globe recolour.
+Every figure on screen is live World Bank data.*
 
 <table>
 <tr>
@@ -97,7 +98,8 @@ trade-route layers. Every figure on screen is live World Bank data.*
 | 🧠 | **AI research notes** | A Managing-Director-style investment note with recommendation, sector signals and confidence score — grounded in the metrics on screen. |
 | 🎙️ | **AI news anchor** | An on-air briefing read aloud through the Web Speech API. No external TTS service. |
 | ⚖️ | **Country comparison** | Side-by-side macro dashboards with a composite investment verdict and point spread. |
-| 🗺️ | **Intelligence layers** | GDP/capita percentile heatmap, animated bilateral trade routes, city corridors, investment-signal overlay, and a 2015–2025 timeline. |
+| 🗺️ | **Intelligence layers** | GDP/capita percentile heatmap, animated bilateral trade routes, city corridors, and an investment-signal overlay. |
+| ⏳ | **Animated timeline** | Scrub or press play to sweep 2015→2025. The globe recolours per year and the sidebar reloads that year's indicators. All eleven years are prefetched in the background so playback is smooth. |
 | ⌘ | **Command palette** | `⌘K` / `Ctrl K` to jump to any country, capital or city, or toggle any layer — fully keyboard-driven. |
 | 🔗 | **Shareable deep links** | Selection, comparison, layers and timeline year all live in the URL: `?c=IN&vs=CN&layers=heatmap,news` |
 | 🎬 | **Demo mode** | An auto-cycling tour of six major economies, for when you want it to present itself. |
@@ -309,10 +311,10 @@ WebGL globe, and it is the main thing left to optimise.
 npm test
 ```
 
-**78 tests** across two Vitest projects:
+**86 tests** across two Vitest projects:
 
 - **`lib`** (node) — scoring composites, city pulse maths, RSS parsing and freshness ranking, rate-limit buckets, and the full indicator-resolution path with `fetch` mocked to fail, hang, or partially succeed
-- **`ui`** (jsdom) — `CountryView` loading / loaded / territory / retry states and provenance badges, plus the command palette's search, keyboard navigation and layer commands
+- **`ui`** (jsdom) — `CountryView` loading / loaded / territory / retry states and provenance badges, the command palette's search and keyboard navigation, and the timeline's playback, wrap-around and manual-override behaviour
 
 ---
 
@@ -334,6 +336,7 @@ Being straight about what is not solved:
 - **City metrics are estimates.** The 29 hubs carry illustrative figures, labelled `(Est.)` in the UI. National figures are the real data.
 - **Risk and Innovation are invented composites**, derived from World Bank indicators and labelled as Meridian composites — they are not standard indices.
 - **The bundled snapshot ages.** The monthly workflow keeps it current; a fork without Actions enabled will drift.
+- **The first load of a timeline year is slow.** The World Bank generates year-scoped bulk responses on demand and can take 10–20s cold. Meridian prefetches all eleven years the moment the timeline layer is enabled and caches them client- and server-side, so this is only felt once per year per deployment.
 - **Total Blocking Time is 400 ms**, dominated by the WebGL bundle.
 
 ---
