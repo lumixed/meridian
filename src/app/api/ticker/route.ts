@@ -3,6 +3,7 @@ import { flagEmoji } from '@/lib/flag'
 import { COUNTRIES_LIST } from '@/data/countries-list'
 
 export const revalidate = 43200
+export const maxDuration = 60
 
 const TICKER_CODES = [
   'US', 'CN', 'JP', 'DE', 'IN', 'GB', 'FR', 'IT', 'BR', 'CA', 'KR',

@@ -202,7 +202,7 @@ npm run lint && npx tsc --noEmit && npm test && npm run build
 |---|---|
 | `npm run dev` | Dev server on port 5320 |
 | `npm run build` | Production build |
-| `npm start` | Serve the production build |
+| `npm start` | Serve the production build (honours `$PORT`, defaults to 3000) |
 | `npm run lint` | ESLint — zero warnings enforced in CI |
 | `npm test` | Vitest, both projects |
 | `npm run snapshot` | Rebuild the offline indicator snapshot from the World Bank |
@@ -325,6 +325,13 @@ Any Node host works. On Vercel:
 1. Import the repository
 2. Add `NEXT_PUBLIC_SITE_URL` (your production origin) and, optionally, `ANTHROPIC_API_KEY`
 3. Deploy — no build configuration needed
+
+Long-running route handlers declare `maxDuration = 60`, because a cold World Bank
+year-scoped query can take 10–20s. On a host that caps function duration lower than that,
+the timeline prefetch and first country load will fail — raise the cap or shorten the
+upstream timeouts in `src/lib/worldbank.ts` and `src/app/api/heatmap/route.ts`.
+
+Any other Node host works too — `npm run build && npm start`, with `$PORT` respected.
 
 ---
 

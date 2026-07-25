@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getSovereignCodes } from '@/lib/country-meta'
 
 export const revalidate = 86400
+export const maxDuration = 60
 
 const BASE = 'https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.CD'
 

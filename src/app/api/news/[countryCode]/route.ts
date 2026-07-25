@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { freshnessScore, combinedScore, parseRss, type NewsArticle } from '@/lib/news-scoring'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 const NAMES: Record<string, string> = {
   US: 'United States', IN: 'India', CN: 'China', GB: 'United Kingdom',

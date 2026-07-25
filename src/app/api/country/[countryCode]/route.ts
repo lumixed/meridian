@@ -5,6 +5,8 @@ import { getCountryMeta } from '@/lib/country-meta'
 import { computeInnovation, computeRiskScore } from '@/lib/scores'
 import type { CountryData } from '@/types/country'
 
+export const maxDuration = 60
+
 export async function GET(req: Request, { params }: { params: Promise<{ countryCode: string }> }) {
   const { countryCode } = await params
   const raw = decodeURIComponent(countryCode).trim()

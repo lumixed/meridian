@@ -8,7 +8,7 @@ import { promisify } from 'node:util'
 const run = promisify(execFile)
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 
-const BASE = process.env.CAPTURE_URL ?? 'http://localhost:5320'
+const BASE = process.env.CAPTURE_URL ?? `http://localhost:${process.env.PORT ?? 3000}`
 const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const OUT = 'docs'
 const FPS = 10
