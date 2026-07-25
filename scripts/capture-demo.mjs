@@ -12,7 +12,7 @@ const BASE = process.env.CAPTURE_URL ?? 'http://localhost:5320'
 const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const OUT = 'docs'
 const FPS = 10
-const WIDTH = 1100
+const WIDTH = Number(process.env.CAPTURE_WIDTH ?? 900)
 
 const LAUNCH = {
   executablePath: CHROME,
@@ -60,7 +60,30 @@ async function recordTour(browser, dir) {
 
   await page.click('[aria-label="Trade Routes"]')
   await sleep(2200)
-  await shot('trade', 14, 240)
+  await shot('trade', 12, 240)
+
+  await page.click('[aria-label="Trade Routes"]')
+  await page.click('[aria-label="Close panel"]')
+  await page.click('[aria-label="Historical Timeline"]')
+  await sleep(1200)
+  await page.evaluate(() => {
+    const el = document.querySelector('input[type=range]')
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+    setter.call(el, '2015')
+    el.dispatchEvent(new Event('change', { bubbles: true }))
+  })
+  await sleep(30000)
+
+  for (let year = 2015; year <= 2025; year++) {
+    await page.evaluate(y => {
+      const el = document.querySelector('input[type=range]')
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+      setter.call(el, String(y))
+      el.dispatchEvent(new Event('change', { bubbles: true }))
+    }, year)
+    await sleep(700)
+    await shot('timeline', 2, 120)
+  }
 
   await page.close()
   return frame
@@ -72,7 +95,7 @@ async function encodeGif(dir, workDir) {
 
   await run('ffmpeg', [
     '-y', '-framerate', String(FPS), '-pattern_type', 'glob', '-i', glob,
-    '-vf', `scale=${WIDTH}:-1:flags=lanczos,palettegen=max_colors=200:stats_mode=diff`,
+    '-vf', `scale=${WIDTH}:-1:flags=lanczos,palettegen=max_colors=160:stats_mode=diff`,
     palette, '-loglevel', 'error',
   ])
 
