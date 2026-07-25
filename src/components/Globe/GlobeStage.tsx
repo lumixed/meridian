@@ -52,6 +52,7 @@ interface Props {
   flyTo: { lat: number; lng: number; altitude?: number } | null
   selectedEntity: SelectedEntity | null
   layers: LayerState
+  timelineYear: number
 }
 
 export default function GlobeStage(props: Props) {

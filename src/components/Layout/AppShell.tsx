@@ -156,6 +156,7 @@ export default function AppShell() {
         flyTo={flyTo}
         selectedEntity={selectedEntity}
         layers={layers}
+        timelineYear={timelineYear}
       />
 
       <CommandPalette
@@ -179,7 +180,13 @@ export default function AppShell() {
           <LayerControl layers={layers} onToggle={toggleLayer} legendOffset={sidebarWidth} />
 
           <AnimatePresence>
-            {layers.timeline && <TimelineSlider year={timelineYear} onChange={setTimelineYear} />}
+            {layers.timeline && (
+              <TimelineSlider
+                year={timelineYear}
+                onChange={setTimelineYear}
+                heatmapActive={layers.heatmap || layers.investment}
+              />
+            )}
           </AnimatePresence>
 
           <DemoMode

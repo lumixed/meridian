@@ -15,6 +15,7 @@ export interface GlobeCoreProps {
   flyTo: { lat: number; lng: number; altitude?: number } | null
   selectedEntity: SelectedEntity | null
   layers: LayerState
+  timelineYear: number
 }
 
 interface GeoFeature {
@@ -49,6 +50,9 @@ function getCentroid(geom: GeoFeature['geometry']): [number, number] {
   ]
 }
 
+const TIMELINE_MIN = 2015
+const TIMELINE_MAX = 2025
+
 function heatColor(pct: number): string {
   if (pct >= 0.90) return 'rgba(0,255,140,0.99)'
   if (pct >= 0.75) return 'rgba(50,210,80,0.97)'
@@ -57,7 +61,9 @@ function heatColor(pct: number): string {
   return 'rgba(210,15,15,0.99)'
 }
 
-export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEntity, layers }: GlobeCoreProps) {
+export default function GlobeCore({
+  onEntitySelect, onLoaded, flyTo, selectedEntity, layers, timelineYear,
+}: GlobeCoreProps) {
   const globeRef = useRef<GlobeMethods | undefined>(undefined)
   const onEntitySelectRef = useRef(onEntitySelect)
   const onLoadedRef = useRef(onLoaded)
@@ -70,10 +76,14 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
   const [selectedCountry, setSelectedCountry] = useState<GeoFeature | null>(null)
   const [dims, setDims] = useState({ w: 800, h: 600 })
   const [heatmapScores, setHeatmapScores] = useState<Record<string, number>>({})
-  const heatFetched = useRef(false)
+  const heatCache = useRef(new Map<string, Record<string, number>>())
   const setupDone = useRef(false)
 
-  const { heatmap, tradeRoutes, cityNetwork, investment } = layers
+  const { heatmap, tradeRoutes, cityNetwork, investment, timeline: timelineActive } = layers
+  const heatYear = timelineActive ? timelineYear : undefined
+
+  const yearRef = useRef(heatYear)
+  useEffect(() => { yearRef.current = heatYear }, [heatYear])
 
   useEffect(() => {
     const upd = () => setDims({ w: window.innerWidth, h: window.innerHeight })
@@ -92,14 +102,56 @@ export default function GlobeCore({ onEntitySelect, onLoaded, flyTo, selectedEnt
       .then(d => { if (d.success) setCities(d.cities) })
   }, [])
 
+  const loadHeatmap = useCallback(async (year: number | undefined, signal?: AbortSignal) => {
+    const key = year ? String(year) : 'latest'
+    const cached = heatCache.current.get(key)
+    if (cached) return cached
+
+    const res = await fetch(year ? `/api/heatmap?year=${year}` : '/api/heatmap', { signal })
+    const data = await res.json()
+    const scores: Record<string, number> = data.scores ?? {}
+    if (Object.keys(scores).length === 0) return null
+
+    heatCache.current.set(key, scores)
+    return scores
+  }, [])
+
   useEffect(() => {
-    if (!(heatmap || investment) || heatFetched.current) return
-    heatFetched.current = true
-    fetch('/api/heatmap')
-      .then(r => r.json())
-      .then(d => setHeatmapScores(d.scores ?? {}))
+    if (!(heatmap || investment)) return
+
+    const cached = heatCache.current.get(heatYear ? String(heatYear) : 'latest')
+    if (cached) {
+      setHeatmapScores(cached)
+      return
+    }
+
+    const ctrl = new AbortController()
+    loadHeatmap(heatYear, ctrl.signal)
+      .then(scores => { if (scores) setHeatmapScores(scores) })
       .catch(() => {})
-  }, [heatmap, investment])
+
+    return () => ctrl.abort()
+  }, [heatmap, investment, heatYear, loadHeatmap])
+
+  useEffect(() => {
+    if (!(heatmap || investment) || !timelineActive) return
+
+    let cancelled = false
+    const warm = async () => {
+      for (let y = TIMELINE_MIN; y <= TIMELINE_MAX; y++) {
+        if (cancelled) return
+        if (heatCache.current.has(String(y))) continue
+        try {
+          const scores = await loadHeatmap(y)
+          if (cancelled || !scores) continue
+          setHeatmapScores(current => (yearRef.current === y ? scores : current))
+        } catch {}
+      }
+    }
+    warm()
+
+    return () => { cancelled = true }
+  }, [heatmap, investment, timelineActive, loadHeatmap])
 
   const percentileScores = useMemo(() => {
     const entries = Object.entries(heatmapScores)
